@@ -25,9 +25,37 @@ namespace ExpenseTracker.Persistence.Configurations
                 .WithMany(r => r.Users)
                 .HasForeignKey(x => x.RoleId);
 
-            builder.HasMany(x=>x.Expenses)
-                .WithOne(u=>u.User)
+            builder.HasMany(x => x.Expenses)
+                .WithOne(u => u.User)
                 .HasForeignKey(x => x.UserId);
+
+            builder.HasData(
+                new User
+                {
+                    Id = 1,
+                    Name = "Admin",
+                    Surname = "Admin",
+                    Email = "admin@gmail.com",
+                    PasswordHash = "Admin123",
+                    RoleId = 1,
+                    Iban = "TR000000000000000000000001",
+                    IsActive = true,
+                    CreatedUserId = 1,
+                    CreatedDate = DateTime.Parse("2025-04-22T10:00:00Z")
+                },
+                new User
+                {
+                    Id = 2,
+                    Name = "Staff",
+                    Surname = "Staff",
+                    Email = "staff@gmail.com",
+                    PasswordHash = "Staff123",
+                    RoleId = 2,
+                    Iban = "TR000000000000000000000002",
+                    IsActive = true,
+                    CreatedUserId = 1,
+                    CreatedDate = DateTime.Parse("2025-04-22T10:00:00Z")
+                });
         }
 
     }
