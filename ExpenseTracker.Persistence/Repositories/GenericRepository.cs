@@ -43,5 +43,17 @@ namespace ExpenseTracker.Persistence.Repositories
         {
             return _dbSet.Where(predicate);
         }
+
+        public async Task<List<TEntity>> GetByParametersAsync(params Expression<Func<TEntity, bool>>[] predicates)
+        {
+            IQueryable<TEntity> query = _context.Set<TEntity>();
+
+            foreach (var predicate in predicates)
+            {
+                query = query.Where(predicate);
+            }
+
+            return await query.ToListAsync();
+        }
     }
 }

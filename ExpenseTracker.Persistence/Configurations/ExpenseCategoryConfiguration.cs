@@ -9,7 +9,7 @@ namespace ExpenseTracker.Persistence.Configurations
         public void Configure(EntityTypeBuilder<ExpenseCategory> builder)
         {
             builder.HasKey(x => x.Id);
-            builder.Property(x=>x.Name).HasMaxLength(200);
+            builder.Property(x=>x.Name).HasMaxLength(30);
 
             builder.HasMany(x => x.Expenses)
                 .WithOne(e => e.ExpenseCategory)
