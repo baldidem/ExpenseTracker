@@ -13,6 +13,7 @@ namespace ExpenseTracker.Application.Interfaces
         void Delete(TEntity entity);
         IQueryable<TEntity> Where(Expression<Func<TEntity, bool>> predicate);
 
+        Task<TEntity?> FirstOrDefaultAsync(Expression<Func<TEntity, bool>> predicate, params string[] includes);
 
         //Task SaveChangesAsync();
 

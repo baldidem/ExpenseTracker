@@ -9,13 +9,13 @@ namespace ExpenseTracker.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ExpenseCategoryController : ControllerBase
+    public class ExpenseCategoriesController : ControllerBase
     {
         // Expense Category baska bir tabloda tutulacak. Bu yonetici rolu icin yetkilendirilecek.
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
-        public ExpenseCategoryController(IUnitOfWork unitOfWork, IMapper mapper)
+        public ExpenseCategoriesController(IUnitOfWork unitOfWork, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;

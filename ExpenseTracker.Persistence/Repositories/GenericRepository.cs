@@ -55,5 +55,18 @@ namespace ExpenseTracker.Persistence.Repositories
 
             return await query.ToListAsync();
         }
+
+        public async Task<TEntity?> FirstOrDefaultAsync(Expression<Func<TEntity, bool>> predicate, params string[] includes)
+        {
+            IQueryable<TEntity> query = _context.Set<TEntity>();
+            if (includes != null && includes.Any())
+            {
+                foreach (var include  in includes)
+                {
+                    query = query.Include(include);
+                }
+            }
+            return await query.FirstOrDefaultAsync(predicate);
+        }
     }
 }
