@@ -108,8 +108,8 @@ namespace ExpenseTracker.Persistence.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
 
                     b.Property<DateTime?>("UpdatedDate")
                         .HasColumnType("datetime2");
@@ -270,6 +270,10 @@ namespace ExpenseTracker.Persistence.Migrations
                     b.Property<int>("RoleId")
                         .HasColumnType("int");
 
+                    b.Property<string>("RoleName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Surname")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -302,6 +306,7 @@ namespace ExpenseTracker.Persistence.Migrations
                             Name = "Admin",
                             PasswordHash = "Admin123",
                             RoleId = 1,
+                            RoleName = "Admin",
                             Surname = "Admin"
                         },
                         new
@@ -315,6 +320,7 @@ namespace ExpenseTracker.Persistence.Migrations
                             Name = "Staff",
                             PasswordHash = "Staff123",
                             RoleId = 2,
+                            RoleName = "Staff",
                             Surname = "Staff"
                         });
                 });

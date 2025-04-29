@@ -20,6 +20,8 @@ namespace ExpenseTracker.Persistence.Configurations
                 .HasMaxLength(80);
             builder.HasIndex(x => x.Email)
                 .IsUnique();
+            builder.Property(x=>x.RoleName)
+                .IsRequired();
 
             builder.HasOne(x => x.Role)
                 .WithMany(r => r.Users)
@@ -39,6 +41,7 @@ namespace ExpenseTracker.Persistence.Configurations
                     PasswordHash = "Admin123",
                     RoleId = 1,
                     Iban = "TR000000000000000000000001",
+                    RoleName = "Admin",
                     IsActive = true,
                     CreatedUserId = 1,
                     CreatedDate = DateTime.Parse("2025-04-22T10:00:00Z")
@@ -52,6 +55,7 @@ namespace ExpenseTracker.Persistence.Configurations
                     PasswordHash = "Staff123",
                     RoleId = 2,
                     Iban = "TR000000000000000000000002",
+                    RoleName = "Staff",
                     IsActive = true,
                     CreatedUserId = 1,
                     CreatedDate = DateTime.Parse("2025-04-22T10:00:00Z")

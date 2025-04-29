@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ExpenseTracker.Persistence.Migrations
 {
     /// <inheritdoc />
-    public partial class initialMig : Migration
+    public partial class initial_mig : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -19,7 +19,7 @@ namespace ExpenseTracker.Persistence.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
                     CreatedUserId = table.Column<int>(type: "int", nullable: false),
                     CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -64,6 +64,7 @@ namespace ExpenseTracker.Persistence.Migrations
                     Email = table.Column<string>(type: "nvarchar(80)", maxLength: 80, nullable: false),
                     PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     RoleId = table.Column<int>(type: "int", nullable: false),
+                    RoleName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Iban = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CreatedUserId = table.Column<int>(type: "int", nullable: false),
                     CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -161,11 +162,11 @@ namespace ExpenseTracker.Persistence.Migrations
 
             migrationBuilder.InsertData(
                 table: "Users",
-                columns: new[] { "Id", "CreatedDate", "CreatedUserId", "DeletedDate", "DeletedUserId", "Email", "Iban", "IsActive", "Name", "PasswordHash", "RoleId", "Surname", "UpdatedDate", "UpdatedUserId" },
+                columns: new[] { "Id", "CreatedDate", "CreatedUserId", "DeletedDate", "DeletedUserId", "Email", "Iban", "IsActive", "Name", "PasswordHash", "RoleId", "RoleName", "Surname", "UpdatedDate", "UpdatedUserId" },
                 values: new object[,]
                 {
-                    { 1, new DateTime(2025, 4, 22, 13, 0, 0, 0, DateTimeKind.Local), 1, null, null, "admin@gmail.com", "TR000000000000000000000001", true, "Admin", "Admin123", 1, "Admin", null, null },
-                    { 2, new DateTime(2025, 4, 22, 13, 0, 0, 0, DateTimeKind.Local), 1, null, null, "staff@gmail.com", "TR000000000000000000000002", true, "Staff", "Staff123", 2, "Staff", null, null }
+                    { 1, new DateTime(2025, 4, 22, 13, 0, 0, 0, DateTimeKind.Local), 1, null, null, "admin@gmail.com", "TR000000000000000000000001", true, "Admin", "Admin123", 1, "Admin", "Admin", null, null },
+                    { 2, new DateTime(2025, 4, 22, 13, 0, 0, 0, DateTimeKind.Local), 1, null, null, "staff@gmail.com", "TR000000000000000000000002", true, "Staff", "Staff123", 2, "Staff", "Staff", null, null }
                 });
 
             migrationBuilder.CreateIndex(

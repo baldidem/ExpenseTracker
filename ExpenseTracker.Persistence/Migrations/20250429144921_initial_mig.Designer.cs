@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ExpenseTracker.Persistence.Migrations
 {
     [DbContext(typeof(ExpenseTrackerDbContext))]
-    [Migration("20250422155722_initialMig")]
-    partial class initialMig
+    [Migration("20250429144921_initial_mig")]
+    partial class initial_mig
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -111,8 +111,8 @@ namespace ExpenseTracker.Persistence.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
 
                     b.Property<DateTime?>("UpdatedDate")
                         .HasColumnType("datetime2");
@@ -273,6 +273,10 @@ namespace ExpenseTracker.Persistence.Migrations
                     b.Property<int>("RoleId")
                         .HasColumnType("int");
 
+                    b.Property<string>("RoleName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Surname")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -305,6 +309,7 @@ namespace ExpenseTracker.Persistence.Migrations
                             Name = "Admin",
                             PasswordHash = "Admin123",
                             RoleId = 1,
+                            RoleName = "Admin",
                             Surname = "Admin"
                         },
                         new
@@ -318,6 +323,7 @@ namespace ExpenseTracker.Persistence.Migrations
                             Name = "Staff",
                             PasswordHash = "Staff123",
                             RoleId = 2,
+                            RoleName = "Staff",
                             Surname = "Staff"
                         });
                 });

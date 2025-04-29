@@ -27,7 +27,7 @@ namespace ExpenseTracker.API.Controllers
             var expenseCategories = await _unitOfWork.GetRepository<ExpenseCategory>().GetByParametersAsync(x=>x.IsActive);
             if (!expenseCategories.Any())
             {
-                return NotFound(new ApiResponse("Expense Category is not found!"));
+                return NotFound(new ApiResponse("No registered expense category found in the system!"));
             }
             var mappedList = _mapper.Map<List<ExpenseCategory>>(expenseCategories);
             return Ok(new ApiResponse<List<ExpenseCategory>>(mappedList));
@@ -37,7 +37,10 @@ namespace ExpenseTracker.API.Controllers
         public async Task<IActionResult> Create([FromBody] ExpenseCategoryCreateDto model)
         {
             var mapped = _mapper.Map<ExpenseCategory>(model);
-
+            mapped.CreatedDate = DateTime.UtcNow;
+            //mapped.CreatedUserId = ?????
+            await _unitOfWork.GetRepository<ExpenseCategory>().CreateAsync(mapped);
+            await _unitOfWork.SaveChangesAsync();
             return Ok();
         }
     }
