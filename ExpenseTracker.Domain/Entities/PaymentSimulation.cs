@@ -1,4 +1,6 @@
-﻿namespace ExpenseTracker.Domain.Entities
+﻿using System.Transactions;
+
+namespace ExpenseTracker.Domain.Entities
 {
     public class PaymentSimulation : BaseEntity
     {
@@ -6,5 +8,6 @@
         public decimal Amount { get; set; }
         public DateTime PaidDate { get; set; }
         public Expense Expense { get; set; }
+        public TransactionStatus TransactionStatus { get; set; }
     }
 }

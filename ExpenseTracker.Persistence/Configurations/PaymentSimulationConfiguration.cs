@@ -1,6 +1,7 @@
 ﻿using ExpenseTracker.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using System.Reflection.Emit;
 
 namespace ExpenseTracker.Persistence.Configurations
 {
@@ -16,8 +17,8 @@ namespace ExpenseTracker.Persistence.Configurations
                 .IsRequired();
 
             builder.HasOne(x => x.Expense)
-                .WithOne(e => e.PaymentSimulation)
-                .HasForeignKey<PaymentSimulation>(x => x.ExpenseId);
+                .WithMany(e => e.PaymentSimulation)
+                .HasForeignKey(x => x.ExpenseId);
 
         }
     }

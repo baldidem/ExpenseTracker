@@ -11,10 +11,9 @@ namespace ExpenseTracker.Domain.Entities
         public string? DocumentPath { get; set; } //Evrak zorunlu degil.
         public ExpenseStatus ExpenseStatus { get; set; }
         public string? RejectionReason { get; set; }
-        //public DateTime Date { get; set; } // Base'de zaten createdDate var.
 
         public ExpenseCategory ExpenseCategory { get; set; }
         public User User { get; set; }
-        public PaymentSimulation? PaymentSimulation { get; set; }
+        public ICollection<PaymentSimulation?> PaymentSimulation { get; set; } // Bir expense icin payment olusturuldu. iptal edildi mesela tekrar odeme istegi atilir.
     }
 }

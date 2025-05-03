@@ -18,6 +18,7 @@
             }
         }
     }
+
     public class ApiResponse<TEntity>
     {
         public bool IsSuccess { get; set; }

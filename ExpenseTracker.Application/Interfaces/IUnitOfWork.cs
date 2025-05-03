@@ -4,7 +4,11 @@ namespace ExpenseTracker.Application.Interfaces
 {
     public interface IUnitOfWork : IDisposable
     {
-        IGenericRepository<TEntity> GetRepository<TEntity>() where TEntity : BaseEntity;
+        IGenericRepository<ExpenseCategory> ExpenseCategoryRepository { get; }
+        IGenericRepository<Expense> ExpenseRepository { get; }
+        IGenericRepository<PaymentSimulation> PaymentSimulationRepository { get; }
+        IGenericRepository<Role> RoleRepository { get; }
+        IGenericRepository<User> UserRepository { get; }
         Task SaveChangesAsync();
     }
 }

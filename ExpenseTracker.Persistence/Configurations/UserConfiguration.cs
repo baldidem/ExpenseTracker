@@ -1,4 +1,5 @@
-﻿using ExpenseTracker.Domain.Entities;
+﻿using ExpenseTracker.Application.Interfaces.Auth;
+using ExpenseTracker.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -6,6 +7,7 @@ namespace ExpenseTracker.Persistence.Configurations
 {
     public class UserConfiguration : IEntityTypeConfiguration<User>
     {
+
         public void Configure(EntityTypeBuilder<User> builder)
         {
             builder.HasKey(x => x.Id);
@@ -38,7 +40,7 @@ namespace ExpenseTracker.Persistence.Configurations
                     Name = "Admin",
                     Surname = "Admin",
                     Email = "admin@gmail.com",
-                    PasswordHash = "Admin123",
+                    PasswordHash = "$2a$11$Dn3UFdRCm0rIiH3nBsCvLO0.A37tKAxKzybZOt62fwdmtFEw3oc1y",
                     RoleId = 1,
                     Iban = "TR000000000000000000000001",
                     RoleName = "Admin",
@@ -52,7 +54,7 @@ namespace ExpenseTracker.Persistence.Configurations
                     Name = "Staff",
                     Surname = "Staff",
                     Email = "staff@gmail.com",
-                    PasswordHash = "Staff123",
+                    PasswordHash = "$2a$11$sDo52TL5goRJa/SJLbttqOCYkek4mBgdmWq1Z0sHUaJQZh60vOICy",
                     RoleId = 2,
                     Iban = "TR000000000000000000000002",
                     RoleName = "Staff",

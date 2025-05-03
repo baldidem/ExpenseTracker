@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ExpenseTracker.Application.Interfaces.Auth
 {
-    public interface IPasswordHasher
+    public interface IBcryptPasswordHasher
     {
         public string HashPassword(string password);
         public bool ConfirmPassword(string password,string hashedPassword);

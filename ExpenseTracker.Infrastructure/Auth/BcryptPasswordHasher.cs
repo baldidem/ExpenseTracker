@@ -2,16 +2,16 @@
 
 namespace ExpenseTracker.Infrastructure.Auth
 {
-    public class PasswordHasher : IPasswordHasher
+    public class BcryptPasswordHasher : IBcryptPasswordHasher
     {
         public string HashPassword(string password)
         {
-            throw new NotImplementedException();
+            return BCrypt.Net.BCrypt.HashPassword(password);
         }
 
         public bool ConfirmPassword(string password, string hashedPassword)
         {
-            throw new NotImplementedException();
+            return BCrypt.Net.BCrypt.Verify(password,hashedPassword);
         }
     }
 }

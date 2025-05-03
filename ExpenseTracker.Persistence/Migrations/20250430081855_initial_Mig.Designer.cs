@@ -4,6 +4,7 @@ using ExpenseTracker.Persistence.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ExpenseTracker.Persistence.Migrations
 {
     [DbContext(typeof(ExpenseTrackerDbContext))]
-    partial class ExpenseTrackerDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250430081855_initial_Mig")]
+    partial class initial_Mig
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -155,9 +158,6 @@ namespace ExpenseTracker.Persistence.Migrations
                     b.Property<DateTime>("PaidDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("TransactionStatus")
-                        .HasColumnType("int");
-
                     b.Property<DateTime?>("UpdatedDate")
                         .HasColumnType("datetime2");
 
@@ -166,7 +166,8 @@ namespace ExpenseTracker.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ExpenseId");
+                    b.HasIndex("ExpenseId")
+                        .IsUnique();
 
                     b.ToTable("Payments");
                 });
@@ -349,8 +350,8 @@ namespace ExpenseTracker.Persistence.Migrations
             modelBuilder.Entity("ExpenseTracker.Domain.Entities.PaymentSimulation", b =>
                 {
                     b.HasOne("ExpenseTracker.Domain.Entities.Expense", "Expense")
-                        .WithMany("PaymentSimulation")
-                        .HasForeignKey("ExpenseId")
+                        .WithOne("PaymentSimulation")
+                        .HasForeignKey("ExpenseTracker.Domain.Entities.PaymentSimulation", "ExpenseId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

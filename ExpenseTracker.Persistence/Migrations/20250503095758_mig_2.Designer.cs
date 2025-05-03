@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ExpenseTracker.Persistence.Migrations
 {
     [DbContext(typeof(ExpenseTrackerDbContext))]
-    [Migration("20250429144921_initial_mig")]
-    partial class initial_mig
+    [Migration("20250503095758_mig_2")]
+    partial class mig_2
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -158,6 +158,9 @@ namespace ExpenseTracker.Persistence.Migrations
                     b.Property<DateTime>("PaidDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<int>("TransactionStatus")
+                        .HasColumnType("int");
+
                     b.Property<DateTime?>("UpdatedDate")
                         .HasColumnType("datetime2");
 
@@ -166,8 +169,7 @@ namespace ExpenseTracker.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ExpenseId")
-                        .IsUnique();
+                    b.HasIndex("ExpenseId");
 
                     b.ToTable("Payments");
                 });
@@ -307,7 +309,7 @@ namespace ExpenseTracker.Persistence.Migrations
                             Iban = "TR000000000000000000000001",
                             IsActive = true,
                             Name = "Admin",
-                            PasswordHash = "Admin123",
+                            PasswordHash = "$2a$11$Dn3UFdRCm0rIiH3nBsCvLO0.A37tKAxKzybZOt62fwdmtFEw3oc1y",
                             RoleId = 1,
                             RoleName = "Admin",
                             Surname = "Admin"
@@ -321,7 +323,7 @@ namespace ExpenseTracker.Persistence.Migrations
                             Iban = "TR000000000000000000000002",
                             IsActive = true,
                             Name = "Staff",
-                            PasswordHash = "Staff123",
+                            PasswordHash = "$2a$11$sDo52TL5goRJa/SJLbttqOCYkek4mBgdmWq1Z0sHUaJQZh60vOICy",
                             RoleId = 2,
                             RoleName = "Staff",
                             Surname = "Staff"
@@ -350,8 +352,8 @@ namespace ExpenseTracker.Persistence.Migrations
             modelBuilder.Entity("ExpenseTracker.Domain.Entities.PaymentSimulation", b =>
                 {
                     b.HasOne("ExpenseTracker.Domain.Entities.Expense", "Expense")
-                        .WithOne("PaymentSimulation")
-                        .HasForeignKey("ExpenseTracker.Domain.Entities.PaymentSimulation", "ExpenseId")
+                        .WithMany("PaymentSimulation")
+                        .HasForeignKey("ExpenseId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ExpenseTracker.Persistence.Migrations
 {
     /// <inheritdoc />
-    public partial class initial_mig : Migration
+    public partial class initial_Mig : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -165,8 +165,8 @@ namespace ExpenseTracker.Persistence.Migrations
                 columns: new[] { "Id", "CreatedDate", "CreatedUserId", "DeletedDate", "DeletedUserId", "Email", "Iban", "IsActive", "Name", "PasswordHash", "RoleId", "RoleName", "Surname", "UpdatedDate", "UpdatedUserId" },
                 values: new object[,]
                 {
-                    { 1, new DateTime(2025, 4, 22, 13, 0, 0, 0, DateTimeKind.Local), 1, null, null, "admin@gmail.com", "TR000000000000000000000001", true, "Admin", "Admin123", 1, "Admin", "Admin", null, null },
-                    { 2, new DateTime(2025, 4, 22, 13, 0, 0, 0, DateTimeKind.Local), 1, null, null, "staff@gmail.com", "TR000000000000000000000002", true, "Staff", "Staff123", 2, "Staff", "Staff", null, null }
+                    { 1, new DateTime(2025, 4, 22, 13, 0, 0, 0, DateTimeKind.Local), 1, null, null, "admin@gmail.com", "TR000000000000000000000001", true, "Admin", "$2a$11$Dn3UFdRCm0rIiH3nBsCvLO0.A37tKAxKzybZOt62fwdmtFEw3oc1y", 1, "Admin", "Admin", null, null },
+                    { 2, new DateTime(2025, 4, 22, 13, 0, 0, 0, DateTimeKind.Local), 1, null, null, "staff@gmail.com", "TR000000000000000000000002", true, "Staff", "$2a$11$sDo52TL5goRJa/SJLbttqOCYkek4mBgdmWq1Z0sHUaJQZh60vOICy", 2, "Staff", "Staff", null, null }
                 });
 
             migrationBuilder.CreateIndex(

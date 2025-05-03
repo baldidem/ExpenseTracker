@@ -22,7 +22,8 @@ namespace ExpenseTracker.Infrastructure.Auth
             //Kullanici bilgileriyle claimleri olusturuyoruz.
             var claims = new List<Claim>
             {
-                new Claim("UserId", user.Id.ToString()),
+                //new Claim("UserId", user.Id.ToString()),
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new Claim("FistName" , user.Name),
                 new Claim("Surname", user.Surname),
                 new Claim("UserName",user.Surname),
@@ -38,8 +39,8 @@ namespace ExpenseTracker.Infrastructure.Auth
                 issuer: _jwtSettings.Issuer,
                 audience: _jwtSettings.Audience,
                 claims: claims,
-                expires: DateTime.UtcNow.AddMinutes(_jwtSettings.ExpireMinutes),
-                signingCredentials : creds
+                expires: DateTime.Now.AddMinutes(_jwtSettings.ExpireMinutes),
+                signingCredentials: creds
                 );
 
             return new JwtSecurityTokenHandler().WriteToken(token);
