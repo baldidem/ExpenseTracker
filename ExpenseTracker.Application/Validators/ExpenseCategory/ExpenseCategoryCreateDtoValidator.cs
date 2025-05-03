@@ -7,7 +7,8 @@ namespace ExpenseTracker.Application.Validators.ExpenseCategory
     {
         public ExpenseCategoryCreateDtoValidator()
         {
-            RuleFor(e => e.Name).NotEmpty().MaximumLength(30).WithMessage("The expense category can be a maximum of 30 characters.");
+            RuleFor(e => e.Name).NotEmpty().WithMessage("Name is required")
+                .MaximumLength(30).WithMessage("The expense category can be a maximum of 30 characters.");
 
         }
     }

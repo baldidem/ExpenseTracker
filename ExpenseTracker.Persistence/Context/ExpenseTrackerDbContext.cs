@@ -8,16 +8,16 @@ namespace ExpenseTracker.Persistence.Context
 {
     public class ExpenseTrackerDbContext : DbContext
     {
-        //private readonly IHttpContextAccessor _httpContextAccessor;
-        //public ExpenseTrackerDbContext(DbContextOptions<ExpenseTrackerDbContext> options, IHttpContextAccessor httpContextAccessor) : base(options)
-        //{
-        //    _httpContextAccessor = httpContextAccessor;
-        //}
-
-        public ExpenseTrackerDbContext(DbContextOptions<ExpenseTrackerDbContext> options) : base(options)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        public ExpenseTrackerDbContext(DbContextOptions<ExpenseTrackerDbContext> options, IHttpContextAccessor httpContextAccessor) : base(options)
         {
-
+            _httpContextAccessor = httpContextAccessor;
         }
+
+        //public ExpenseTrackerDbContext(DbContextOptions<ExpenseTrackerDbContext> options) : base(options)
+        //{
+
+        //}
         public DbSet<User> Users { get; set; }
         public DbSet<Role> Roles { get; set; }
         public DbSet<Expense> Expenses { get; set; }
@@ -31,38 +31,38 @@ namespace ExpenseTracker.Persistence.Context
 
         }
 
-        //public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
-        //{
-        //    var userIdClaim = _httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier);
+        public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        {
+            var userIdClaim = _httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier);
 
-        //    int.TryParse(userIdClaim, out int userId);
+            int.TryParse(userIdClaim, out int userId);
 
-        //    foreach (var entry in ChangeTracker.Entries<BaseEntity>())
-        //    {
-        //        switch (entry.State)
-        //        {
-        //            case EntityState.Added:
-        //                entry.Entity.CreatedDate = DateTime.UtcNow;
-        //                entry.Entity.CreatedUserId = userId;
-        //                entry.Entity.IsActive = true;
-        //                break;
+            foreach (var entry in ChangeTracker.Entries<BaseEntity>())
+            {
+                switch (entry.State)
+                {
+                    case EntityState.Added:
+                        entry.Entity.CreatedDate = DateTime.UtcNow;
+                        entry.Entity.CreatedUserId = userId;
+                        entry.Entity.IsActive = true;
+                        break;
 
-        //            case EntityState.Modified:
-        //                entry.Entity.UpdatedDate = DateTime.UtcNow;
-        //                entry.Entity.UpdatedUserId = userId;
-        //                break;
+                    case EntityState.Modified:
+                        entry.Entity.UpdatedDate = DateTime.UtcNow;
+                        entry.Entity.UpdatedUserId = userId;
+                        break;
 
-        //            case EntityState.Deleted:
-        //                entry.State = EntityState.Modified; // Soft-delete
-        //                entry.Entity.DeletedDate = DateTime.UtcNow;
-        //                entry.Entity.DeletedUserId = userId;
-        //                entry.Entity.IsActive = false;
-        //                break;
-        //        }
-        //    }
+                    case EntityState.Deleted:
+                        entry.State = EntityState.Modified; // Soft-delete
+                        entry.Entity.DeletedDate = DateTime.UtcNow;
+                        entry.Entity.DeletedUserId = userId;
+                        entry.Entity.IsActive = false;
+                        break;
+                }
+            }
 
-        //    return await base.SaveChangesAsync(cancellationToken);
-        //}
+            return await base.SaveChangesAsync(cancellationToken);
+        }
         //TO DO:INTERCEPTOR EKLE. // BURDA DIREKT HTTPCONTEXTACCESSORA TIGHTLY COUPLED VAR. O YUZDEN KALDIRDIM
         //EXPENSE CATEGORY REDIS.
     }

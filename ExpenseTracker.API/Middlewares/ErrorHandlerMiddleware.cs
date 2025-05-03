@@ -21,7 +21,6 @@ namespace ExpenseTracker.API.Middlewares
             catch (Exception ex)
             {
                 await HandleExceptionAsync(context, ex);
-
             }
         }
         private static Task HandleExceptionAsync(HttpContext context, Exception exception)
@@ -31,26 +30,25 @@ namespace ExpenseTracker.API.Middlewares
             {
                 case ArgumentNullException:
                 case ArgumentException:
-                    code = HttpStatusCode.BadRequest; //400
+                    code = HttpStatusCode.BadRequest;
                     break;
                 case InvalidOperationException:
-                    code = HttpStatusCode.Conflict; //409
+                    code = HttpStatusCode.Conflict;
                     break;
                 case UnauthorizedAccessException:
-                    code = HttpStatusCode.Unauthorized; //401
+                    code = HttpStatusCode.Unauthorized;
                     break;
                 case KeyNotFoundException:
-                    code = HttpStatusCode.NotFound; // 404
+                    code = HttpStatusCode.NotFound;
                     break;
             }
-
             var result = JsonSerializer.Serialize(new
             {
-                status = (int)code,
-                message = exception.Message,
-                errors = exception.InnerException != null ? new[] { exception.InnerException.Message } : null,
-                path = context.Request.Path,
-                traceId = context.TraceIdentifier
+                Status = (int)code,
+                Message = exception.Message,
+                Errors = exception.InnerException != null ? new[] { exception.InnerException.Message } : null,
+                Path = context.Request.Path,
+                TraceId = context.TraceIdentifier
             });
             context.Response.ContentType = "application/json";
             context.Response.StatusCode = (int)code;

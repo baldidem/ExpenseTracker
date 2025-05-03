@@ -1,12 +1,7 @@
-﻿using AutoMapper;
-using ExpenseTracker.Application.DTOs.Common;
+﻿using ExpenseTracker.Application.DTOs.Common;
 using ExpenseTracker.Application.DTOs.ExpenseCategory;
-using ExpenseTracker.Application.Interfaces;
-using ExpenseTracker.Application.Services;
 using ExpenseTracker.Application.Services.ExpenseCategory;
-using ExpenseTracker.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ExpenseTracker.API.Controllers
@@ -23,7 +18,6 @@ namespace ExpenseTracker.API.Controllers
         }
 
         [HttpGet]
-        //[Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetAll()
         {
             var expenseCategories = await _expenseCategoryService.GetAllAsync();
@@ -39,7 +33,6 @@ namespace ExpenseTracker.API.Controllers
         }
 
         [HttpPost]
-        //[Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create([FromBody] ExpenseCategoryCreateDto model)
         {
             var result = await _expenseCategoryService.CreateAsync(model);
@@ -47,18 +40,17 @@ namespace ExpenseTracker.API.Controllers
         }
 
         [HttpPut("{id}")]
-        //[Authorize(Roles = "Admin")]
         public async Task<IActionResult> Update(int id, [FromBody] ExpenseCategoryUpdateDto model)
         {
             var result = await _expenseCategoryService.Update(id, model);
-            return Ok(new ApiResponse("Expense category successfully updated!"));
+            return Ok(new ApiResponse());
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete([FromRoute] int id)
         {
             var result = await _expenseCategoryService.Delete(id);
-            return Ok(new ApiResponse("Expense category successfully deleted!"));
+            return Ok(new ApiResponse());
         }
     }
 }

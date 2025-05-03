@@ -10,7 +10,6 @@ using ExpenseTracker.Application.Settings;
 using ExpenseTracker.Application.Validators.ExpenseCategory;
 using ExpenseTracker.Infrastructure.Auth;
 using ExpenseTracker.Persistence.Context;
-using ExpenseTracker.Persistence.Interceptors;
 using ExpenseTracker.Persistence.Repositories;
 using FluentValidation;
 using FluentValidation.AspNetCore;

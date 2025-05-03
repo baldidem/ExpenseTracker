@@ -6,7 +6,7 @@ namespace ExpenseTracker.Domain.Entities
     {
         public int UserId { get; set; } // Bu expense hangi personele ait
         public decimal Amount { get; set; } // Expense miktari
-        public string Currency { get; set; }
+        public Currency Currency { get; set; }  = Currency.TRY;
         public int ExpenseCategoryId { get; set; }
         public string? DocumentPath { get; set; } //Evrak zorunlu degil.
         public ExpenseStatus ExpenseStatus { get; set; }
