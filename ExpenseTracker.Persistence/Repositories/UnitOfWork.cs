@@ -12,10 +12,6 @@ namespace ExpenseTracker.Persistence.Repositories
         {
             _context = context;
         }
-        //public IGenericRepository<TEntity> GetRepository<TEntity>() where TEntity : BaseEntity
-        //{
-        //    return new GenericRepository<TEntity>(_context);
-        //}
 
         public IGenericRepository<ExpenseCategory> ExpenseCategoryRepository => new GenericRepository<ExpenseCategory>(_context);
 

@@ -10,47 +10,49 @@ using System.Threading.Tasks;
 
 namespace ExpenseTracker.Persistence.Interceptors
 {
-    public class AppSaveChangesInterceptor : SaveChangesInterceptor
-    {
-        private readonly ICurrentUserService _currentUserService;
+    //public class AppSaveChangesInterceptor : SaveChangesInterceptor
+    //{
+    //    private readonly ICurrentUserService _currentUserService;
 
-        public AppSaveChangesInterceptor(ICurrentUserService currentUserService)
-        {
-            _currentUserService = currentUserService;
-        }
+    //    public AppSaveChangesInterceptor(ICurrentUserService currentUserService)
+    //    {
+    //        _currentUserService = currentUserService;
+    //    }
 
-        public override InterceptionResult<int> SavingChanges(DbContextEventData eventData, InterceptionResult<int> result)
-        {
-            var dbContext = eventData.Context;
-            if (dbContext == null) return base.SavingChanges(eventData, result);
+    //    public override InterceptionResult<int> SavingChanges(DbContextEventData eventData, InterceptionResult<int> result)
+    //    {
 
-            var userId = _currentUserService.CurrentUserId ?? 0;
+    //        var dbContext = eventData.Context;
+    //        if (dbContext == null) return base.SavingChanges(eventData, result);
 
-            foreach (var entry in dbContext.ChangeTracker.Entries<BaseEntity>())
-            {
-                switch (entry.State)
-                {
-                    case EntityState.Added:
-                        entry.Entity.CreatedDate = DateTime.UtcNow;
-                        entry.Entity.CreatedUserId = userId;
-                        entry.Entity.IsActive = true;
-                        break;
+    //        var userId = _currentUserService.CurrentUserId ?? 0;
 
-                    case EntityState.Modified:
-                        entry.Entity.UpdatedDate = DateTime.UtcNow;
-                        entry.Entity.UpdatedUserId = userId;
-                        break;
+    //        foreach (var entry in dbContext.ChangeTracker.Entries<BaseEntity>())
+    //        {
+    //            switch (entry.State)
+    //            {
+    //                case EntityState.Added:
+    //                    entry.Entity.CreatedDate = DateTime.UtcNow;
+    //                    entry.Entity.CreatedUserId = userId;
+    //                    entry.Entity.IsActive = true;
+    //                    break;
 
-                    case EntityState.Deleted:
-                        entry.State = EntityState.Modified; // Soft-delete
-                        entry.Entity.DeletedDate = DateTime.UtcNow;
-                        entry.Entity.DeletedUserId = userId;
-                        entry.Entity.IsActive = false;
-                        break;
-                }
-            }
+    //                case EntityState.Modified:
+    //                    entry.Entity.UpdatedDate = DateTime.UtcNow;
+    //                    entry.Entity.UpdatedUserId = userId;
+    //                    break;
 
-            return base.SavingChanges(eventData, result);
-        }
-    }
+    //                case EntityState.Deleted:
+    //                    entry.State = EntityState.Modified; // Soft-delete
+    //                    entry.Entity.DeletedDate = DateTime.UtcNow;
+    //                    entry.Entity.DeletedUserId = userId;
+    //                    entry.Entity.IsActive = false;
+    //                    break;
+    //            }
+    //        }
+
+
+    //        return base.SavingChanges(eventData, result);
+    //    }
+    //}
 }

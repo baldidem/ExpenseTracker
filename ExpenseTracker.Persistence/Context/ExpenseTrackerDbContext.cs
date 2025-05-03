@@ -1,14 +1,23 @@
 ﻿using ExpenseTracker.Domain.Entities;
+using ExpenseTracker.Persistence.Interceptors;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace ExpenseTracker.Persistence.Context
 {
     public class ExpenseTrackerDbContext : DbContext
     {
+        //private readonly IHttpContextAccessor _httpContextAccessor;
+        //public ExpenseTrackerDbContext(DbContextOptions<ExpenseTrackerDbContext> options, IHttpContextAccessor httpContextAccessor) : base(options)
+        //{
+        //    _httpContextAccessor = httpContextAccessor;
+        //}
+
         public ExpenseTrackerDbContext(DbContextOptions<ExpenseTrackerDbContext> options) : base(options)
         {
-        }
 
+        }
         public DbSet<User> Users { get; set; }
         public DbSet<Role> Roles { get; set; }
         public DbSet<Expense> Expenses { get; set; }
@@ -19,7 +28,9 @@ namespace ExpenseTracker.Persistence.Context
         {
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(ExpenseTrackerDbContext).Assembly);
             base.OnModelCreating(modelBuilder);
+
         }
+
         //public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         //{
         //    var userIdClaim = _httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier);

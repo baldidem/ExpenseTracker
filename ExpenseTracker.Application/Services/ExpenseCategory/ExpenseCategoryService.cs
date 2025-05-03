@@ -87,15 +87,30 @@ namespace ExpenseTracker.Application.Services.ExpenseCategory
 
             category.Name = dto.Name;
 
-             _unitOfWork.ExpenseCategoryRepository.Update(category);
+            _unitOfWork.ExpenseCategoryRepository.Update(category);
             await _unitOfWork.SaveChangesAsync();
-
             return true;
         }
 
-        public Task<bool> Delete(int id)
+        public async Task<bool> Delete(int id)
         {
-            throw new NotImplementedException();
+            if (id <= 0)
+            {
+                throw new ArgumentException("Id must be greater than zero.");
+            }
+
+            var expenseCategory = await _unitOfWork.ExpenseCategoryRepository.GetByIdAsync(id);
+            if (expenseCategory == null)
+            {
+                throw new KeyNotFoundException($"Expense category with id {id} was not found.");
+            }
+            if (!expenseCategory.IsActive)
+            {
+                throw new InvalidOperationException("Expense category is already deleted.");
+            }
+            _unitOfWork.ExpenseCategoryRepository.Delete(expenseCategory);
+            await _unitOfWork.SaveChangesAsync();
+            return true;
         }
     }
 }

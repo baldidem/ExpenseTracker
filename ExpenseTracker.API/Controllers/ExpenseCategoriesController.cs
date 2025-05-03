@@ -1,81 +1,64 @@
-﻿//using AutoMapper;
-//using ExpenseTracker.Application.DTOs.Common;
-//using ExpenseTracker.Application.DTOs.ExpenseCategory;
-//using ExpenseTracker.Application.Interfaces;
-//using ExpenseTracker.Application.Services;
-//using ExpenseTracker.Application.Services.ExpenseCategory;
-//using ExpenseTracker.Domain.Entities;
-//using Microsoft.AspNetCore.Authorization;
-//using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using ExpenseTracker.Application.DTOs.Common;
+using ExpenseTracker.Application.DTOs.ExpenseCategory;
+using ExpenseTracker.Application.Interfaces;
+using ExpenseTracker.Application.Services;
+using ExpenseTracker.Application.Services.ExpenseCategory;
+using ExpenseTracker.Domain.Entities;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 
-//namespace ExpenseTracker.API.Controllers
-//{
-//    [Route("api/[controller]")]
-//    [ApiController]
-//    [Authorize]
-//    public class ExpenseCategoriesController : ControllerBase
-//    {
-//        // Expense Category baska bir tabloda tutulacak. Bu yonetici rolu icin yetkilendirilecek.
-//        //private readonly IUnitOfWork _unitOfWork;
-//        //private readonly IMapper _mapper;
-//        //private readonly IHttpContextAccessor _contextAccessor;
+namespace ExpenseTracker.API.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    [Authorize(Roles = "Admin")]
+    public class ExpenseCategoriesController : ControllerBase
+    {
+        private readonly IExpenseCategoryService _expenseCategoryService;
+        public ExpenseCategoriesController(IExpenseCategoryService expenseCategoryService)
+        {
+            _expenseCategoryService = expenseCategoryService;
+        }
 
-//        //IExpenseCategoriesService
+        [HttpGet]
+        //[Authorize(Roles = "Admin")]
+        public async Task<IActionResult> GetAll()
+        {
+            var expenseCategories = await _expenseCategoryService.GetAllAsync();
 
-//        //public ExpenseCategoriesController(IUnitOfWork unitOfWork, IMapper mapper, IHttpContextAccessor contextAccessor)
-//        //{
-//        //    _unitOfWork = unitOfWork;
-//        //    _mapper = mapper;
-//        //    _contextAccessor = contextAccessor;
-//        //}
-//        private readonly IExpenseCategoryService _expenseCategoryService;
+            return Ok(new ApiResponse<List<ExpenseCategoryResponseDto>>(expenseCategories));
+        }
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetById([FromRoute] int id)
+        {
+            var expenseCategory = await _expenseCategoryService.GetByIdAsync(id);
 
-//        public ExpenseCategoriesController(IExpenseCategoryService expenseCategoryService)
-//        {
-//            _expenseCategoryService = expenseCategoryService;
-//        }
+            return Ok(new ApiResponse<ExpenseCategoryResponseDto>(expenseCategory));
+        }
 
-//        [HttpGet]
-//        [Authorize(Roles = "Admin")]
-//        public async Task<IActionResult> GetAll() // Bu tum expense categoryleri listeleyen method.
-//        {
-//            var expenseCategories = await _expenseCategoryService.GetAll();
-//            if (!expenseCategories.Any())
-//            {
-//                return NotFound(new ApiResponse("No registered expense category found in the system!"));
-//            }
+        [HttpPost]
+        //[Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Create([FromBody] ExpenseCategoryCreateDto model)
+        {
+            var result = await _expenseCategoryService.CreateAsync(model);
+            return CreatedAtAction(nameof(GetById), new { id = result.Id }, result);
+        }
 
-//            return Ok(new ApiResponse<List<ExpenseCategoryResponseDto>>(expenseCategories));
-//        }
-//        [HttpGet("id")]
-//        public async Task<IActionResult> GetById([FromRoute] int id)
-//        {
-//            var expenseCategory = await _expenseCategoryService.GetById(id);
-//            if (expenseCategory == null)
-//            {
-//                return NotFound(new ApiResponse("Expense Category is not found!"));
-//            }
+        [HttpPut("{id}")]
+        //[Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Update(int id, [FromBody] ExpenseCategoryUpdateDto model)
+        {
+            var result = await _expenseCategoryService.Update(id, model);
+            return Ok(new ApiResponse("Expense category successfully updated!"));
+        }
 
-//            return Ok(new ApiResponse<ExpenseCategoryResponseDto>(expenseCategory));
-//        }
-
-//        [HttpPost]
-//        [Authorize(Roles = "Admin")]
-//        public async Task<IActionResult> Create([FromBody] ExpenseCategoryCreateDto model)
-//        {
-//            var result = await _expenseCategoryService.Create(model);
-//            return Ok(new ApiResponse<int>(result));
-//        }
-
-//        //public async Task<IActionResult> Update([FromBody] ExpenseCategoryUpdateDto model)
-//        //{
-
-
-//        //}
-
-//        //public async Task<IActionResult> Delete([FromRoute] int id)
-//        //{
-//        //    return Ok();
-//        //}
-//    }
-//}
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete([FromRoute] int id)
+        {
+            var result = await _expenseCategoryService.Delete(id);
+            return Ok(new ApiResponse("Expense category successfully deleted!"));
+        }
+    }
+}

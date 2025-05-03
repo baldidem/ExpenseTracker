@@ -1,4 +1,5 @@
 using AutoMapper;
+using ExpenseTracker.API.Middlewares;
 using ExpenseTracker.API.Services;
 using ExpenseTracker.Application.Interfaces;
 using ExpenseTracker.Application.Interfaces.Auth;
@@ -14,9 +15,7 @@ using ExpenseTracker.Persistence.Repositories;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
@@ -53,7 +52,7 @@ builder.Services.AddScoped<IExpenseCategoryService, ExpenseCategoryService>();
 #endregion
 
 builder.Services.AddHttpContextAccessor();
-builder.Services.AddScoped<AppSaveChangesInterceptor>();
+//builder.Services.AddScoped<AppSaveChangesInterceptor>();
 
 builder.Services.AddSwaggerGen(c =>
 {
@@ -89,15 +88,16 @@ builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddDbContext<ExpenseTrackerDbContext>((serviceProvider, options) =>
-{
-    var interceptor = serviceProvider.GetRequiredService<AppSaveChangesInterceptor>();
-    options
-        .UseSqlServer(builder.Configuration.GetConnectionString("MSSQLServer"))
-        .AddInterceptors(interceptor);
-});
+builder.Services.AddDbContext<ExpenseTrackerDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("MSSQLServer")));
 
-
+//builder.Services.AddDbContext<ExpenseTrackerDbContext>((serviceProvider, options) =>
+//{
+//    var interceptor = serviceProvider.GetRequiredService<AppSaveChangesInterceptor>();
+//    options
+//        .UseSqlServer(builder.Configuration.GetConnectionString("MSSQLServer"))
+//        .AddInterceptors(interceptor);
+//});
 
 builder.Services.AddSingleton(new MapperConfiguration(x => x.AddProfile(new MapperConfig())).CreateMapper());
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
@@ -114,10 +114,11 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+app.UseGlobalExceptionHandler();
 
-app.UseAuthentication();  // Kimlik do?rulama
-app.UseAuthorization();   // Yetkilendirme
+app.UseHttpsRedirection();
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapControllers();
 
