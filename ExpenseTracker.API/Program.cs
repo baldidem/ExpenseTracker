@@ -98,7 +98,9 @@ builder.Services.AddDbContext<ExpenseTrackerDbContext>(options =>
 //        .AddInterceptors(interceptor);
 //});
 
-builder.Services.AddSingleton(new MapperConfiguration(x => x.AddProfile(new MapperConfig())).CreateMapper());
+//builder.Services.AddSingleton(new MapperConfiguration(x => x.AddProfile(new MapperConfig())).CreateMapper());
+builder.Services.AddAutoMapper(typeof(ExpenseCategoryMapper).Assembly);
+
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddValidatorsFromAssemblyContaining<ExpenseCategoryCreateDtoValidator>();
 
