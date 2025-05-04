@@ -5,6 +5,7 @@ using ExpenseTracker.Application.Interfaces;
 using ExpenseTracker.Application.Interfaces.Auth;
 using ExpenseTracker.Application.Interfaces.CurrentUser;
 using ExpenseTracker.Application.Mapper;
+using ExpenseTracker.Application.Services.Expense;
 using ExpenseTracker.Application.Services.ExpenseCategory;
 using ExpenseTracker.Application.Settings;
 using ExpenseTracker.Application.Validators.ExpenseCategory;
@@ -48,6 +49,7 @@ builder.Services.AddAuthentication(options =>
 #region Services
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 builder.Services.AddScoped<IExpenseCategoryService, ExpenseCategoryService>();
+builder.Services.AddScoped<IExpenseService, ExpenseService>();
 #endregion
 
 builder.Services.AddHttpContextAccessor();
@@ -100,6 +102,8 @@ builder.Services.AddDbContext<ExpenseTrackerDbContext>(options =>
 
 //builder.Services.AddSingleton(new MapperConfiguration(x => x.AddProfile(new MapperConfig())).CreateMapper());
 builder.Services.AddAutoMapper(typeof(ExpenseCategoryMapper).Assembly);
+
+
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddValidatorsFromAssemblyContaining<ExpenseCategoryCreateDtoValidator>();

@@ -1,6 +1,10 @@
 ﻿using AutoMapper;
 using ExpenseTracker.Application.DTOs.Expense;
+using ExpenseTracker.Application.DTOs.ExpenseCategory;
 using ExpenseTracker.Application.Interfaces;
+using ExpenseTracker.Application.Interfaces.CurrentUser;
+using ExpenseTracker.Domain.Enums;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace ExpenseTracker.Application.Services.Expense
 {
@@ -8,41 +12,239 @@ namespace ExpenseTracker.Application.Services.Expense
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly ICurrentUserService _currentUserService;
 
-        public ExpenseService(IUnitOfWork unitOfWork, IMapper mapper)
+        public ExpenseService(IUnitOfWork unitOfWork, IMapper mapper, ICurrentUserService currentUserService)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _currentUserService = currentUserService;
+        }
+        public async Task<List<ExpenseResponseDto>> GetAllForAdmin(int? userId = null)
+        {
+            // This method is used for admin role.
+            List<Domain.Entities.Expense> expenses;
+
+            if (userId != null)
+            {
+                expenses = await _unitOfWork.ExpenseRepository.GetAllByParametersAsync(x => x.UserId == userId && x.IsActive);
+            }
+
+            expenses = await _unitOfWork.ExpenseRepository.GetAllByParametersAsync(x => x.IsActive);
+            var mappedExpenses = _mapper.Map<List<ExpenseResponseDto>>(expenses);
+            return mappedExpenses;
+        }
+        public async Task<List<ExpenseResponseDto>> GetAllForCurrentUser()
+        {
+            var currentUserId = _currentUserService.CurrentUserId;
+            if (currentUserId == null)
+            {
+                throw new UnauthorizedAccessException("User is not found!");
+            }
+            var expenses = await _unitOfWork.ExpenseRepository.GetAllByParametersAsync(x => x.UserId == currentUserId);
+            var mappedExpenses = _mapper.Map<List<ExpenseResponseDto>>(expenses);
+            return mappedExpenses;
         }
 
-        public Task<ExpenseResponseDto> CreateAsync(ExpenseCreateDto dto)
+        public async Task<ExpenseResponseDto> GetByIdAsync(int expenseId)
+        {
+            if (expenseId <= 0)
+            {
+                throw new ArgumentException("Expense ID must be greater than zero.");
+            }
+
+            var expense = await _unitOfWork.ExpenseRepository.GetByIdAsync(expenseId);
+            if (expense == null)
+            {
+                throw new KeyNotFoundException($"Expense with ID {expenseId} was not found.");
+            }
+
+            return _mapper.Map<ExpenseResponseDto>(expense);
+
+        }
+        public Task<List<ExpenseResponseDto>> GetByParametersForCurrentUser(ExpenseFilterDto filter)
         {
             throw new NotImplementedException();
         }
 
-        public Task<bool> Delete(int id)
+        public async Task<ExpenseResponseDto> CreateAsync(ExpenseCreateDto dto)
         {
-            throw new NotImplementedException();
+            if (dto == null)
+            {
+                throw new ArgumentNullException(nameof(dto), "Input data is required.");
+            }
+
+            var currentUserId = _currentUserService.CurrentUserId;
+            var currentUserRole = _currentUserService.CurrentUserRole;
+
+            if (currentUserId == null)
+            {
+                throw new UnauthorizedAccessException("Current user could not be determined.");
+            }
+
+            if (string.Equals(currentUserRole, "Admin", StringComparison.OrdinalIgnoreCase))
+            {
+                throw new UnauthorizedAccessException("Admins are not allowed to create expenses.");
+            }
+
+            // ExpenseCategory kontrolü
+            var category = await _unitOfWork.ExpenseCategoryRepository.GetByIdAsync(dto.ExpenseCategoryId);
+
+            if (category == null || !category.IsActive)
+            {
+                throw new KeyNotFoundException($"Expense category with id {dto.ExpenseCategoryId} was not found or is inactive.");
+            }
+
+            // 🔥 Dosya kaydetme işlemi (opsiyonel)
+            string? documentPath = null;
+            if (dto.Document != null && dto.Document.Length > 0)
+            {
+                var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
+                if (!Directory.Exists(uploadsFolder))
+                {
+                    Directory.CreateDirectory(uploadsFolder);
+                }
+
+                var uniqueFileName = $"{Guid.NewGuid()}_{dto.Document.FileName}";
+                var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+                using (var fileStream = new FileStream(filePath, FileMode.Create))
+                {
+                    await dto.Document.CopyToAsync(fileStream);
+                }
+
+                documentPath = $"/uploads/{uniqueFileName}";
+            }
+
+            // Expense nesnesi oluştur
+            var expense = new ExpenseTracker.Domain.Entities.Expense
+            {
+                UserId = currentUserId.Value,
+                Amount = dto.Amount,
+                ExpenseCategoryId = dto.ExpenseCategoryId,
+                DocumentPath = documentPath,
+                ExpenseStatus = ExpenseStatus.Pending,
+                IsActive = true
+            };
+
+            await _unitOfWork.ExpenseRepository.CreateAsync(expense);
+            await _unitOfWork.SaveChangesAsync();
+            var createdExpense = await _unitOfWork.ExpenseRepository.GetByIdAsync(expense.Id, "User");
+
+
+            return _mapper.Map<ExpenseResponseDto>(createdExpense);
         }
 
-        public Task<List<ExpenseResponseDto>> GetAll(int? userId = null)
+        public async Task<bool> UpdateAsync(int id, ExpenseUpdateDto dto)
         {
-            throw new NotImplementedException();
+            if (id <= 0)
+                throw new ArgumentException("Expense id must be greater than zero.");
+
+            if (dto == null)
+                throw new ArgumentNullException(nameof(dto), "Input data is required.");
+
+            var currentUserId = _currentUserService.CurrentUserId;
+            var currentUserRole = _currentUserService.CurrentUserRole;
+
+            if (currentUserId == null)
+                throw new UnauthorizedAccessException("User identity not found.");
+
+            var expense = await _unitOfWork.ExpenseRepository.GetByIdAsync(id);
+
+            if (expense == null)
+                throw new KeyNotFoundException($"Expense with id {id} was not found.");
+
+            if (!string.Equals(currentUserRole, "Admin", StringComparison.OrdinalIgnoreCase))
+            {
+                // Staff ise sadece kendi kaydını güncelleyebilir
+                if (expense.UserId != currentUserId.Value)
+                    throw new UnauthorizedAccessException("You can only update your own expenses.");
+            }
+
+            // 🔥 Amount güncelleme (nullable check)
+            if (dto.Amount.HasValue)
+            {
+                if (dto.Amount.Value <= 0)
+                    throw new InvalidOperationException("Amount must be greater than zero.");
+
+                expense.Amount = dto.Amount.Value;
+            }
+
+            // 🔥 Category güncelleme (nullable check)
+            if (dto.ExpenseCategoryId.HasValue)
+            {
+                var category = await _unitOfWork.ExpenseCategoryRepository.GetByIdAsync(dto.ExpenseCategoryId.Value);
+                if (category == null || !category.IsActive)
+                    throw new InvalidOperationException("Expense category is not valid.");
+
+                expense.ExpenseCategoryId = dto.ExpenseCategoryId.Value;
+            }
+
+            // 🔥 Dosya işlemleri
+            if (dto.Document != null && dto.Document.Length > 0)
+            {
+                // Eski dosyayı sil
+                if (!string.IsNullOrEmpty(expense.DocumentPath))
+                {
+                    var existingPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", expense.DocumentPath.TrimStart('/'));
+                    if (File.Exists(existingPath))
+                    {
+                        File.Delete(existingPath);
+                    }
+                }
+
+                // Yeni dosyayı kaydet
+                var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
+                if (!Directory.Exists(uploadsFolder))
+                    Directory.CreateDirectory(uploadsFolder);
+
+                var uniqueFileName = $"{Guid.NewGuid()}_{dto.Document.FileName}";
+                var newPath = Path.Combine(uploadsFolder, uniqueFileName);
+
+                using (var fileStream = new FileStream(newPath, FileMode.Create))
+                {
+                    await dto.Document.CopyToAsync(fileStream);
+                }
+
+                expense.DocumentPath = $"/uploads/{uniqueFileName}";
+            }
+
+            _unitOfWork.ExpenseRepository.Update(expense);
+            await _unitOfWork.SaveChangesAsync();
+            return true;
+        }
+        public async Task<bool> DeleteAsync(int id)
+        {
+            if (id <= 0)
+                throw new ArgumentException("Expense id must be greater than zero.");
+
+            var currentUserId = _currentUserService.CurrentUserId;
+            var currentUserRole = _currentUserService.CurrentUserRole;
+
+            if (currentUserId == null)
+                throw new UnauthorizedAccessException("User identity not found.");
+
+            var expense = await _unitOfWork.ExpenseRepository.GetByIdAsync(id);
+
+            if (expense == null)
+                throw new KeyNotFoundException($"Expense with id {id} was not found.");
+
+            if (!expense.IsActive)
+                throw new InvalidOperationException("Expense is already deleted.");
+
+            // Eğer Admin değilse kendi kaydını silebilir mi kontrol et
+            if (!string.Equals(currentUserRole, "Admin", StringComparison.OrdinalIgnoreCase))
+            {
+                if (expense.UserId != currentUserId.Value)
+                    throw new UnauthorizedAccessException("You can only delete your own expenses.");
+            }
+
+            // Soft delete ➔ Interceptor zaten halledecek.
+            _unitOfWork.ExpenseRepository.Delete(expense);
+            await _unitOfWork.SaveChangesAsync();
+            return true;
         }
 
-        public Task<List<ExpenseResponseDto>> GetAllByParameter(ExpenseFilterDto filter)
-        {
-            throw new NotImplementedException();
-        }
 
-        public Task<List<ExpenseResponseDto>> GetAllForCurrentUser()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<bool> Update(int id, ExpenseUpdateDto dto)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

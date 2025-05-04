@@ -8,8 +8,8 @@ namespace ExpenseTracker.Application.Services.ExpenseCategory
         Task<List<ExpenseCategoryResponseDto>> GetAllAsync();
         Task<ExpenseCategoryResponseDto?> GetByIdAsync(int id);
         Task<ExpenseCategoryResponseDto> CreateAsync(ExpenseCategoryCreateDto dto);
-        Task<bool> Update(int id, ExpenseCategoryUpdateDto dto);
-        Task<bool> Delete(int id);
+        Task<bool> UpdateAsync  (int id, ExpenseCategoryUpdateDto dto);
+        Task<bool> DeleteAsync(int id);
 
     }
 }

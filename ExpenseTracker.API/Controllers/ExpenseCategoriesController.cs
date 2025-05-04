@@ -42,14 +42,14 @@ namespace ExpenseTracker.API.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] ExpenseCategoryUpdateDto model)
         {
-            var result = await _expenseCategoryService.Update(id, model);
+            var result = await _expenseCategoryService.UpdateAsync(id, model);
             return Ok(new ApiResponse());
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete([FromRoute] int id)
         {
-            var result = await _expenseCategoryService.Delete(id);
+            var result = await _expenseCategoryService.DeleteAsync(id);
             return Ok(new ApiResponse());
         }
     }

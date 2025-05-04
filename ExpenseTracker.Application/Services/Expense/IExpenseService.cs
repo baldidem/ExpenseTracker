@@ -4,11 +4,12 @@ namespace ExpenseTracker.Application.Services.Expense
 {
     public interface IExpenseService
     {
-        Task<List<ExpenseResponseDto>> GetAll(int? userId = null); //Bu admin icin tum expenseleri listeleyen method.
+        Task<List<ExpenseResponseDto>> GetAllForAdmin(int? userId = null); //Bu admin icin tum expenseleri listeleyen method.
         Task<List<ExpenseResponseDto>> GetAllForCurrentUser(); // Bu personel icin.
-        Task<List<ExpenseResponseDto>> GetAllByParameter(ExpenseFilterDto filter);
+        Task<List<ExpenseResponseDto>> GetByParametersForCurrentUser(ExpenseFilterDto filter);
+        Task<ExpenseResponseDto> GetByIdAsync(int expenseId);
         Task<ExpenseResponseDto> CreateAsync(ExpenseCreateDto dto);
-        Task<bool> Update(int id, ExpenseUpdateDto dto);
-        Task<bool> Delete(int id);
+        Task<bool> UpdateAsync(int id, ExpenseUpdateDto dto);
+        Task<bool> DeleteAsync(int id);
     }
 }

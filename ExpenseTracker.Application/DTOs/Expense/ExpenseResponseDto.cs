@@ -1,4 +1,5 @@
 ﻿using ExpenseTracker.Application.DTOs.Common;
+using ExpenseTracker.Domain.Enums;
 
 namespace ExpenseTracker.Application.DTOs.Expense
 {

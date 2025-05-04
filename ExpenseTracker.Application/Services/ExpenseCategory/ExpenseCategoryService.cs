@@ -59,7 +59,7 @@ namespace ExpenseTracker.Application.Services.ExpenseCategory
             return _mapper.Map<ExpenseCategoryResponseDto>(expenseCategory);
         }
 
-        public async Task<bool> Update(int id, ExpenseCategoryUpdateDto dto)
+        public async Task<bool> UpdateAsync(int id, ExpenseCategoryUpdateDto dto)
         {
             if (id <= 0)
             {
@@ -92,7 +92,7 @@ namespace ExpenseTracker.Application.Services.ExpenseCategory
             return true;
         }
 
-        public async Task<bool> Delete(int id)
+        public async Task<bool> DeleteAsync(int id)
         {
             if (id <= 0)
             {

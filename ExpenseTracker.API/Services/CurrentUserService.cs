@@ -20,5 +20,12 @@ namespace ExpenseTracker.API.Services
                 return int.TryParse(userId, out var id) ? id : null;
             }
         }
+        public string? CurrentUserRole
+        {
+            get
+            {
+                return _httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.Role);
+            }
+        }
     }
 }

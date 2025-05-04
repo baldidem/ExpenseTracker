@@ -21,9 +21,22 @@ namespace ExpenseTracker.Persistence.Repositories
         {
             return await _dbSet.ToListAsync();
         }
-        public async Task<TEntity?> GetByIdAsync(int id)
+        public async Task<TEntity> GetByIdAsync(int id, params string[] includes)
         {
-            return await _dbSet.FindAsync(id);
+            //var query = _dbSet.AsQueryable();
+            //query = includes.Aggregate(query, (current, inc) => EntityFrameworkQueryableExtensions.Include(current, inc));
+            //return await EntityFrameworkQueryableExtensions.FirstOrDefaultAsync(query, x => x.Id == id);
+            IQueryable<TEntity> query = _context.Set<TEntity>();
+
+            if (includes != null && includes.Any())
+            {
+                foreach (var include in includes)
+                {
+                    query = query.Include(include);
+                }
+            }
+
+            return await query.FirstOrDefaultAsync(e => e.Id == id);
         }
         public async Task<TEntity> CreateAsync(TEntity entity)
         {
@@ -44,7 +57,7 @@ namespace ExpenseTracker.Persistence.Repositories
             return _dbSet.Where(predicate);
         }
 
-        public async Task<List<TEntity>> GetByParametersAsync(params Expression<Func<TEntity, bool>>[] predicates)
+        public async Task<List<TEntity>> GetAllByParametersAsync(params Expression<Func<TEntity, bool>>[] predicates)
         {
             IQueryable<TEntity> query = _context.Set<TEntity>();
 
@@ -67,6 +80,18 @@ namespace ExpenseTracker.Persistence.Repositories
                 }
             }
             return await query.FirstOrDefaultAsync(predicate);
+        }
+
+        public async Task<TEntity> GetByParametersAsync(params Expression<Func<TEntity, bool>>[] predicates)
+        {
+            IQueryable<TEntity> query = _context.Set<TEntity>();
+
+            foreach (var predicate in predicates)
+            {
+                query = query.Where(predicate);
+            }
+
+            return await query.FirstOrDefaultAsync();
         }
     }
 }
