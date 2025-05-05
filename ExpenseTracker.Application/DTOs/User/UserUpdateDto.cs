@@ -8,11 +8,11 @@ namespace ExpenseTracker.Application.DTOs.User
 {
     public class UserUpdateDto
     {
-        public string Name { get; set; }
-        public string Surname { get; set; }
-        public string Email { get; set; }
-        public string? Password { get; set; } // Opsiyonel, null ise şifre değişmez
-        public int RoleId { get; set; }
-        public string Iban { get; set; }
+        public string? Name { get; set; }
+        public string? Surname { get; set; }
+        public string? Email { get; set; }
+        public string? Password { get; set; }
+        public int? RoleId { get; set; }
+        public string? Iban { get; set; }
     }
 }

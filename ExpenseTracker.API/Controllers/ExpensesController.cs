@@ -63,6 +63,12 @@ namespace ExpenseTracker.API.Controllers
             var result = await _expenseService.DeleteAsync(expenseId);
             return Ok(new ApiResponse());
         }
-        //UPDATE DOLDUR. DELETE DOLDUR. FILTRELERE GORE USER EXPENSE LISTELEME DOLDUR.
+        [HttpPut("ExpenseStatus")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> UpdateExpenseStatus(int id, [FromBody] ExpenseStatusDto dto)
+        {
+            var result = await _expenseService.UpdateExpenseStatus(id, dto);
+            return Ok(new ApiResponse());
+        }
     }
 }

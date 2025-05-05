@@ -1,10 +1,9 @@
 ﻿using AutoMapper;
 using ExpenseTracker.Application.DTOs.Expense;
-using ExpenseTracker.Application.DTOs.ExpenseCategory;
 using ExpenseTracker.Application.Interfaces;
 using ExpenseTracker.Application.Interfaces.CurrentUser;
+using ExpenseTracker.Domain.Entities;
 using ExpenseTracker.Domain.Enums;
-using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace ExpenseTracker.Application.Services.Expense
 {
@@ -149,7 +148,7 @@ namespace ExpenseTracker.Application.Services.Expense
             if (currentUserId == null)
                 throw new UnauthorizedAccessException("User identity not found.");
 
-            var expense = await _unitOfWork.ExpenseRepository.GetByIdAsync(id);
+            var expense = await _unitOfWork.ExpenseRepository.GetByIdAsync(id, "User");
 
             if (expense == null)
                 throw new KeyNotFoundException($"Expense with id {id} was not found.");
@@ -239,12 +238,60 @@ namespace ExpenseTracker.Application.Services.Expense
                     throw new UnauthorizedAccessException("You can only delete your own expenses.");
             }
 
-            // Soft delete ➔ Interceptor zaten halledecek.
             _unitOfWork.ExpenseRepository.Delete(expense);
             await _unitOfWork.SaveChangesAsync();
             return true;
         }
 
+        public async Task<bool> UpdateExpenseStatus(int expenseId, ExpenseStatusDto dto)
+        {
+            if (expenseId <= 0)
+                throw new ArgumentException("Expense id must be greater than zero.");
+            if (dto == null)
+                throw new ArgumentNullException(nameof(dto), "Input data is required.");
 
+            var expense = await _unitOfWork.ExpenseRepository.GetByIdAsync(expenseId);
+
+            if (expense == null)
+                throw new KeyNotFoundException($"Expense with id {expenseId} was not found.");
+
+            if (expense.ExpenseStatus != ExpenseStatus.Pending)
+                throw new InvalidOperationException("Only pending expenses can be updated.");
+
+            if (dto.NewStatus == ExpenseStatus.Approved)
+            {
+                // ✅ 1. Expense onaylandı
+                expense.ExpenseStatus = ExpenseStatus.Approved;
+
+                // ✅ 2. PaymentSimulation oluştur
+                var payment = new PaymentSimulation
+                {
+                    ExpenseId = expense.Id,
+                    Amount = expense.Amount,
+                    PaidDate = DateTime.UtcNow,
+                    PaymentTransactionStatus = PaymentTransactionStatus.Confirmed
+                };
+
+                await _unitOfWork.PaymentSimulationRepository.CreateAsync(payment);
+            }
+            else if (dto.NewStatus == ExpenseStatus.Rejected)
+            {
+                // Red durumunda gerekçe kontrolü
+                if (string.IsNullOrWhiteSpace(dto.RejectionReason))
+                    throw new InvalidOperationException("Rejection reason is required when rejecting an expense.");
+
+                expense.ExpenseStatus = ExpenseStatus.Rejected;
+                expense.RejectionReason = dto.RejectionReason;
+            }
+            else
+            {
+                throw new InvalidOperationException("Invalid status provided.");
+            }
+
+            _unitOfWork.ExpenseRepository.Update(expense);
+            await _unitOfWork.SaveChangesAsync();
+
+            return true;
+        }
     }
 }

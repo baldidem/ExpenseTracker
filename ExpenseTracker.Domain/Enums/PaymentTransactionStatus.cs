@@ -1,6 +1,6 @@
 ﻿namespace ExpenseTracker.Domain.Enums
 {
-    public enum TransactionStatus
+    public enum PaymentTransactionStatus
     {
         Cancelled = 1,
         Confirmed = 2,

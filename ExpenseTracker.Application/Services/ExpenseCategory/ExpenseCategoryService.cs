@@ -108,6 +108,14 @@ namespace ExpenseTracker.Application.Services.ExpenseCategory
             {
                 throw new InvalidOperationException("Expense category is already deleted.");
             }
+
+            var hasExpenses = await _unitOfWork.ExpenseRepository.AnyAsync(x => x.ExpenseCategoryId == id && x.IsActive);
+
+            if (hasExpenses)
+            {
+                throw new InvalidOperationException("Cannot delete the category because it has associated expenses.");
+            }
+
             _unitOfWork.ExpenseCategoryRepository.Delete(expenseCategory);
             await _unitOfWork.SaveChangesAsync();
             return true;

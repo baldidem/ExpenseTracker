@@ -11,5 +11,6 @@ namespace ExpenseTracker.Application.Services.Expense
         Task<ExpenseResponseDto> CreateAsync(ExpenseCreateDto dto);
         Task<bool> UpdateAsync(int id, ExpenseUpdateDto dto);
         Task<bool> DeleteAsync(int id);
+        Task<bool> UpdateExpenseStatus(int expenseId,ExpenseStatusDto dto);
     }
 }
