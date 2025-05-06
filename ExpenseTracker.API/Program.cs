@@ -1,4 +1,3 @@
-using AutoMapper;
 using ExpenseTracker.API.Middlewares;
 using ExpenseTracker.API.Services;
 using ExpenseTracker.Application.Interfaces;
@@ -7,11 +6,15 @@ using ExpenseTracker.Application.Interfaces.CurrentUser;
 using ExpenseTracker.Application.Mapper;
 using ExpenseTracker.Application.Services.Expense;
 using ExpenseTracker.Application.Services.ExpenseCategory;
+using ExpenseTracker.Application.Services.Report;
+using ExpenseTracker.Application.Services.Role;
+using ExpenseTracker.Application.Services.User;
 using ExpenseTracker.Application.Settings;
 using ExpenseTracker.Application.Validators.ExpenseCategory;
 using ExpenseTracker.Infrastructure.Auth;
 using ExpenseTracker.Persistence.Context;
 using ExpenseTracker.Persistence.Repositories;
+using ExpenseTracker.Persistence.Services.Report;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -50,6 +53,9 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 builder.Services.AddScoped<IExpenseCategoryService, ExpenseCategoryService>();
 builder.Services.AddScoped<IExpenseService, ExpenseService>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IRoleService, RoleService>();
+builder.Services.AddScoped<IReportService, ReportService>();
 #endregion
 
 builder.Services.AddHttpContextAccessor();

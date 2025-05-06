@@ -7,6 +7,7 @@ namespace ExpenseTracker.Domain.Entities
     {
         public int ExpenseId { get; set; }
         public decimal Amount { get; set; }
+        public Currency Currency { get; set; } = Currency.TRY;
         public DateTime? PaidDate { get; set; }
         public Expense Expense { get; set; }
         public PaymentTransactionStatus PaymentTransactionStatus { get; set; }

@@ -93,7 +93,7 @@ namespace ExpenseTracker.Persistence.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     UserId = table.Column<int>(type: "int", nullable: false),
                     Amount = table.Column<decimal>(type: "decimal(16,2)", precision: 16, scale: 2, nullable: false),
-                    Currency = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Currency = table.Column<int>(type: "int", nullable: false),
                     ExpenseCategoryId = table.Column<int>(type: "int", nullable: false),
                     DocumentPath = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ExpenseStatus = table.Column<int>(type: "int", nullable: false),
@@ -132,6 +132,7 @@ namespace ExpenseTracker.Persistence.Migrations
                     ExpenseId = table.Column<int>(type: "int", nullable: false),
                     Amount = table.Column<decimal>(type: "decimal(16,2)", precision: 16, scale: 2, nullable: false),
                     PaidDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    PaymentTransactionStatus = table.Column<int>(type: "int", nullable: false),
                     CreatedUserId = table.Column<int>(type: "int", nullable: false),
                     CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -182,8 +183,7 @@ namespace ExpenseTracker.Persistence.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Payments_ExpenseId",
                 table: "Payments",
-                column: "ExpenseId",
-                unique: true);
+                column: "ExpenseId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Users_Email",

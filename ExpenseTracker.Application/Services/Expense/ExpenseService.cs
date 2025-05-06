@@ -282,6 +282,7 @@ namespace ExpenseTracker.Application.Services.Expense
 
                 expense.ExpenseStatus = ExpenseStatus.Rejected;
                 expense.RejectionReason = dto.RejectionReason;
+
             }
             else
             {
