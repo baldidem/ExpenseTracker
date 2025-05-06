@@ -2,6 +2,7 @@
 using ExpenseTracker.Application.DTOs.Role;
 using ExpenseTracker.Application.DTOs.User;
 using ExpenseTracker.Application.Services.User;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,6 +10,7 @@ namespace ExpenseTracker.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles ="Admin")]
     public class UsersController : ControllerBase
     {
         private readonly IUserService _userService;
