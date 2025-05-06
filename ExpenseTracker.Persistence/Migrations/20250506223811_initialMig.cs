@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ExpenseTracker.Persistence.Migrations
 {
     /// <inheritdoc />
-    public partial class initial_Mig : Migration
+    public partial class initialMig : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -65,7 +65,7 @@ namespace ExpenseTracker.Persistence.Migrations
                     PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     RoleId = table.Column<int>(type: "int", nullable: false),
                     RoleName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Iban = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Iban = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     CreatedUserId = table.Column<int>(type: "int", nullable: false),
                     CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -131,6 +131,7 @@ namespace ExpenseTracker.Persistence.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ExpenseId = table.Column<int>(type: "int", nullable: false),
                     Amount = table.Column<decimal>(type: "decimal(16,2)", precision: 16, scale: 2, nullable: false),
+                    Currency = table.Column<int>(type: "int", nullable: false),
                     PaidDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     PaymentTransactionStatus = table.Column<int>(type: "int", nullable: false),
                     CreatedUserId = table.Column<int>(type: "int", nullable: false),
@@ -189,6 +190,12 @@ namespace ExpenseTracker.Persistence.Migrations
                 name: "IX_Users_Email",
                 table: "Users",
                 column: "Email",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_Iban",
+                table: "Users",
+                column: "Iban",
                 unique: true);
 
             migrationBuilder.CreateIndex(

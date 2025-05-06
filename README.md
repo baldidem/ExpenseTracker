@@ -30,9 +30,8 @@ Veritabanı Ayarları:
 
 appsettings.json dosyasındaki ConnectionStrings kısmını düzenleyin.
 
-Migration oluşturun & veritabanını güncelleyin:
+Veritabanını güncelleyin:
 
-dotnet ef migrations add InitialCreate
 dotnet ef database update
 
 Projeyi Başlatın:
@@ -40,6 +39,7 @@ Projeyi Başlatın:
 dotnet run --project ExpenseTracker.API
 
 Swagger UI: https://localhost:<port>/swagger
+
 🗄️ Seed Data Bilgisi
 
 Projede varsayılan olarak iki kullanıcı seed edilmiştir:
@@ -84,7 +84,7 @@ AutoMapper
 
 FluentValidation
 
-Swagger / OpenAPI
+Swagger
 
 📊 Raporlama
 
@@ -132,9 +132,9 @@ POST /api/Users: Yeni kullanıcı oluşturma (Admin)
 Request Body Örneği:
 
 {
-  "name": "John",
-  "surname": "Doe",
-  "email": "john.doe@example.com",
+  "name": "Didem",
+  "surname": "Bal",
+  "email": "didem@gmail.com",
   "password": "Password123",
   "roleId": 2,
   "iban": "TR000000000000000000000000"
@@ -145,8 +145,8 @@ PUT /api/Users/{id}: Kullanıcı güncelleme (Admin)
 Request Body Örneği:
 
 {
-  "name": "John Updated",
-  "surname": "Doe Updated",
+  "name": "Didem Updated",
+  "surname": "Didem Updated",
   "email": "john.updated@example.com",
   "roleId": 2,
   "iban": "TR000000000000000000000001"
@@ -179,7 +179,7 @@ POST /api/Expenses: Yeni masraf ekleme (Personnel)
 Request Body Örneği:
 
 {
-  "amount": 1500.75,
+  "amount": 1500,
   "currency": 1,
   "expenseCategoryId": 3,
   "description": "Flight ticket to conference"
@@ -187,7 +187,7 @@ Request Body Örneği:
 
 📈 ReportsController
 
-GET /api/Reports/ExpenseApprovalStatus: Onaylı/Reddedilmiş masrafların raporu.
+GET /api/Reports/ExpenseApprovalStatus: Onaylı/Reddedilmiş masrafların raporu. 1- Pending, 2- Approved- 3-Rejected
 
 Query Params: startDate, endDate, status
 

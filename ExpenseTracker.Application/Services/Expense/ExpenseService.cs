@@ -50,7 +50,7 @@ namespace ExpenseTracker.Application.Services.Expense
                 throw new ArgumentException("Expense ID must be greater than zero.");
             }
 
-            var expense = await _unitOfWork.ExpenseRepository.GetByIdAsync(expenseId);
+            var expense = await _unitOfWork.ExpenseRepository.GetByIdAsync(expenseId,"User","ExpenseCategory");
             if (expense == null)
             {
                 throw new KeyNotFoundException($"Expense with ID {expenseId} was not found.");

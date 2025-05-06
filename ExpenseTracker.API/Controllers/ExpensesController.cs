@@ -35,6 +35,7 @@ namespace ExpenseTracker.API.Controllers
             return Ok(new ApiResponse<List<ExpenseResponseDto>>(result));
         }
         [HttpGet("{id}")]
+        [Authorize(Roles = "Staff")]
         public async Task<IActionResult> GetById([FromRoute] int id)
         {
             var result = await _expenseService.GetByIdAsync(id);
