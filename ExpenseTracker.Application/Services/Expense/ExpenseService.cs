@@ -21,7 +21,6 @@ namespace ExpenseTracker.Application.Services.Expense
         }
         public async Task<List<ExpenseResponseDto>> GetAllForAdmin(int? userId = null)
         {
-            // This method is used for admin role.
             List<Domain.Entities.Expense> expenses;
 
             if (userId != null)
@@ -44,7 +43,6 @@ namespace ExpenseTracker.Application.Services.Expense
             var mappedExpenses = _mapper.Map<List<ExpenseResponseDto>>(expenses);
             return mappedExpenses;
         }
-
         public async Task<ExpenseResponseDto> GetByIdAsync(int expenseId)
         {
             if (expenseId <= 0)
@@ -61,11 +59,6 @@ namespace ExpenseTracker.Application.Services.Expense
             return _mapper.Map<ExpenseResponseDto>(expense);
 
         }
-        public Task<List<ExpenseResponseDto>> GetByParametersForCurrentUser(ExpenseFilterDto filter)
-        {
-            throw new NotImplementedException();
-        }
-
         public async Task<ExpenseResponseDto> CreateAsync(ExpenseCreateDto dto)
         {
             if (dto == null)
@@ -85,8 +78,6 @@ namespace ExpenseTracker.Application.Services.Expense
             {
                 throw new UnauthorizedAccessException("Admins are not allowed to create expenses.");
             }
-
-            // ExpenseCategory kontrolü
             var category = await _unitOfWork.ExpenseCategoryRepository.GetByIdAsync(dto.ExpenseCategoryId);
 
             if (category == null || !category.IsActive)
@@ -94,7 +85,6 @@ namespace ExpenseTracker.Application.Services.Expense
                 throw new KeyNotFoundException($"Expense category with id {dto.ExpenseCategoryId} was not found or is inactive.");
             }
 
-            // 🔥 Dosya kaydetme işlemi (opsiyonel)
             string? documentPath = null;
             if (dto.Document != null && dto.Document.Length > 0)
             {
@@ -114,8 +104,6 @@ namespace ExpenseTracker.Application.Services.Expense
 
                 documentPath = $"/uploads/{uniqueFileName}";
             }
-
-            // Expense nesnesi oluştur
             var expense = new ExpenseTracker.Domain.Entities.Expense
             {
                 UserId = currentUserId.Value,
@@ -129,11 +117,8 @@ namespace ExpenseTracker.Application.Services.Expense
             await _unitOfWork.ExpenseRepository.CreateAsync(expense);
             await _unitOfWork.SaveChangesAsync();
             var createdExpense = await _unitOfWork.ExpenseRepository.GetByIdAsync(expense.Id, "User");
-
-
             return _mapper.Map<ExpenseResponseDto>(createdExpense);
         }
-
         public async Task<bool> UpdateAsync(int id, ExpenseUpdateDto dto)
         {
             if (id <= 0)
@@ -155,12 +140,9 @@ namespace ExpenseTracker.Application.Services.Expense
 
             if (!string.Equals(currentUserRole, "Admin", StringComparison.OrdinalIgnoreCase))
             {
-                // Staff ise sadece kendi kaydını güncelleyebilir
                 if (expense.UserId != currentUserId.Value)
                     throw new UnauthorizedAccessException("You can only update your own expenses.");
             }
-
-            // 🔥 Amount güncelleme (nullable check)
             if (dto.Amount.HasValue)
             {
                 if (dto.Amount.Value <= 0)
@@ -168,8 +150,6 @@ namespace ExpenseTracker.Application.Services.Expense
 
                 expense.Amount = dto.Amount.Value;
             }
-
-            // 🔥 Category güncelleme (nullable check)
             if (dto.ExpenseCategoryId.HasValue)
             {
                 var category = await _unitOfWork.ExpenseCategoryRepository.GetByIdAsync(dto.ExpenseCategoryId.Value);
@@ -178,11 +158,8 @@ namespace ExpenseTracker.Application.Services.Expense
 
                 expense.ExpenseCategoryId = dto.ExpenseCategoryId.Value;
             }
-
-            // 🔥 Dosya işlemleri
             if (dto.Document != null && dto.Document.Length > 0)
             {
-                // Eski dosyayı sil
                 if (!string.IsNullOrEmpty(expense.DocumentPath))
                 {
                     var existingPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", expense.DocumentPath.TrimStart('/'));
@@ -191,8 +168,6 @@ namespace ExpenseTracker.Application.Services.Expense
                         File.Delete(existingPath);
                     }
                 }
-
-                // Yeni dosyayı kaydet
                 var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
                 if (!Directory.Exists(uploadsFolder))
                     Directory.CreateDirectory(uploadsFolder);
@@ -230,8 +205,6 @@ namespace ExpenseTracker.Application.Services.Expense
 
             if (!expense.IsActive)
                 throw new InvalidOperationException("Expense is already deleted.");
-
-            // Eğer Admin değilse kendi kaydını silebilir mi kontrol et
             if (!string.Equals(currentUserRole, "Admin", StringComparison.OrdinalIgnoreCase))
             {
                 if (expense.UserId != currentUserId.Value)
@@ -242,7 +215,6 @@ namespace ExpenseTracker.Application.Services.Expense
             await _unitOfWork.SaveChangesAsync();
             return true;
         }
-
         public async Task<bool> UpdateExpenseStatus(int expenseId, ExpenseStatusDto dto)
         {
             if (expenseId <= 0)
@@ -257,13 +229,10 @@ namespace ExpenseTracker.Application.Services.Expense
 
             if (expense.ExpenseStatus != ExpenseStatus.Pending)
                 throw new InvalidOperationException("Only pending expenses can be updated.");
-
+        
             if (dto.NewStatus == ExpenseStatus.Approved)
             {
-                // ✅ 1. Expense onaylandı
                 expense.ExpenseStatus = ExpenseStatus.Approved;
-
-                // ✅ 2. PaymentSimulation oluştur
                 var payment = new PaymentSimulation
                 {
                     ExpenseId = expense.Id,
@@ -276,13 +245,11 @@ namespace ExpenseTracker.Application.Services.Expense
             }
             else if (dto.NewStatus == ExpenseStatus.Rejected)
             {
-                // Red durumunda gerekçe kontrolü
                 if (string.IsNullOrWhiteSpace(dto.RejectionReason))
                     throw new InvalidOperationException("Rejection reason is required when rejecting an expense.");
 
                 expense.ExpenseStatus = ExpenseStatus.Rejected;
                 expense.RejectionReason = dto.RejectionReason;
-
             }
             else
             {
@@ -291,8 +258,12 @@ namespace ExpenseTracker.Application.Services.Expense
 
             _unitOfWork.ExpenseRepository.Update(expense);
             await _unitOfWork.SaveChangesAsync();
-
             return true;
         }
+
+        //public Task<List<ExpenseResponseDto>> GetByParametersForCurrentUser(ExpenseFilterDto filter)
+        //{
+        //    throw new NotImplementedException();
+        //}
     }
 }

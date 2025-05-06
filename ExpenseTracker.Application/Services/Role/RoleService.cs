@@ -35,15 +35,15 @@ namespace ExpenseTracker.Application.Services.Role
         }
         public async Task<RoleResponseDto> CreateAsync(RoleCreateDto dto)
         {
-            if (dto == null)
-            {
-                throw new ArgumentNullException(nameof(dto), "Input data is required.");
-            }
+            var roles = await _unitOfWork.RoleRepository.GetAllByParametersAsync(x => x.IsActive && x.Name.ToLower() == dto.Name.ToLower());
+
+            if (roles.Any())
+            throw new InvalidOperationException("There is a role with the same name.");
 
             var role = _mapper.Map<Domain.Entities.Role>(dto);
             await _unitOfWork.RoleRepository.CreateAsync(role);
             await _unitOfWork.SaveChangesAsync();
-            var mapped = _mapper.Map<RoleResponseDto>(_mapper);
+            var mapped = _mapper.Map<RoleResponseDto>(role);
             return mapped;
         }
         public async Task<bool> UpdateAsync(int id, RoleUpdateDto dto)

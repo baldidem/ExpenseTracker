@@ -6,7 +6,7 @@ namespace ExpenseTracker.Application.Services.Expense
     {
         Task<List<ExpenseResponseDto>> GetAllForAdmin(int? userId = null); //Bu admin icin tum expenseleri listeleyen method.
         Task<List<ExpenseResponseDto>> GetAllForCurrentUser(); // Bu personel icin.
-        Task<List<ExpenseResponseDto>> GetByParametersForCurrentUser(ExpenseFilterDto filter);
+        //Task<List<ExpenseResponseDto>> GetByParametersForCurrentUser(ExpenseFilterDto filter);
         Task<ExpenseResponseDto> GetByIdAsync(int expenseId);
         Task<ExpenseResponseDto> CreateAsync(ExpenseCreateDto dto);
         Task<bool> UpdateAsync(int id, ExpenseUpdateDto dto);

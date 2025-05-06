@@ -22,6 +22,8 @@ namespace ExpenseTracker.Persistence.Configurations
                 .HasMaxLength(80);
             builder.HasIndex(x => x.Email)
                 .IsUnique();
+            builder.HasIndex(x => x.Iban)
+           .IsUnique();
             builder.Property(x=>x.RoleName)
                 .IsRequired();
 

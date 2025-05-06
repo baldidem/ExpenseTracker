@@ -45,42 +45,6 @@ namespace ExpenseTracker.Application.Services.User
             var mapped = _mapper.Map<UserResponseDto>(user);    
             return mapped;
         }
-        //public async Task<UserResponseDto> CreateAsync(UserCreateDto dto)
-        //{
-        //    if (dto == null)
-        //        throw new ArgumentNullException(nameof(dto), "Input data is required.");
-
-        //    var existingUser = await _unitOfWork.UserRepository
-        //        .FirstOrDefaultAsync(x => x.Email.ToLower() == dto.Email.ToLower());
-
-        //    if (existingUser != null)
-        //    {
-        //        throw new InvalidOperationException("A user with the same email address already exists.");
-        //    }
-        //    var role = await _unitOfWork.RoleRepository.GetByIdAsync(dto.RoleId);
-        //    if (role == null)
-        //    {
-        //        throw new KeyNotFoundException($"Role with id {dto.RoleId} was not found.");
-        //    }
-
-        //    var hashedPassword = _passwordHasher.HashPassword(dto.Password);
-
-        //    var user = new Domain.Entities.User
-        //    {
-        //        Name = dto.Name,
-        //        Surname = dto.Surname,
-        //        Email = dto.Email,
-        //        PasswordHash = hashedPassword,
-        //        RoleId = dto.RoleId,
-        //        RoleName = role.Name,
-        //        Iban = dto.Iban,
-        //        IsActive = true
-        //    };
-        //    await _unitOfWork.UserRepository.CreateAsync(user);
-        //    await _unitOfWork.SaveChangesAsync();
-
-        //    return _mapper.Map<UserResponseDto>(user);
-        //}
 
         public async Task<UserResponseDto> CreateAsync(UserCreateDto dto)
         {
@@ -137,6 +101,19 @@ namespace ExpenseTracker.Application.Services.User
                 if (emailExists != null)
                 {
                     throw new InvalidOperationException("A user with the same email address already exists.");
+                }
+
+                user.Email = dto.Email;
+            }
+
+            if (!string.IsNullOrWhiteSpace(dto.Iban) && !dto.Iban.Equals(user.Iban, StringComparison.OrdinalIgnoreCase))
+            {
+                var ibanExists = await _unitOfWork.UserRepository
+                    .FirstOrDefaultAsync(x => x.Iban.ToLower() == dto.Iban.ToLower() && x.Id != id);
+
+                if (ibanExists != null)
+                {
+                    throw new InvalidOperationException("A user with the same iban already exists.");
                 }
 
                 user.Email = dto.Email;

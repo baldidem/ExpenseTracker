@@ -41,7 +41,7 @@ namespace ExpenseTracker.API.Controllers
             var result = await _reportService.GetUserPaymentRateAsync(startDate, endDate,userId);
             return Ok(new ApiResponse<UserPaymentReportResponseDto>(result));
         }
-        [HttpGet("approval-status-report")]
+        [HttpGet("CompanyApprovalStatusReport")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetApprovalStatusReport([FromQuery] DateTime? startDate, [FromQuery] DateTime? endDate, [FromQuery] ExpenseStatus? status)
         {

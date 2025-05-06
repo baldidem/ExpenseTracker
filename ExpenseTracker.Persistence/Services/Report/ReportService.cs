@@ -26,15 +26,18 @@ namespace ExpenseTracker.Persistence.Services.Report
             using (var connection = new SqlConnection(_configuration.GetConnectionString("MSSQLServer")))
             {
                 var sql = @"
-            SELECT 
+                SELECT 
                 p.Amount,
-                p.Currency,
+                CASE 
+                WHEN p.Currency = 1 THEN 'TRY'
+                ELSE 'Unknown'
+                END AS Currency,
                 p.PaidDate
-            FROM Payments p
-            WHERE p.PaymentTransactionStatus = @ConfirmedStatus
-              AND p.PaidDate BETWEEN @StartDate AND @EndDate
-              AND p.IsActive = 1
-        ";
+                FROM Payments p
+                WHERE p.PaymentTransactionStatus = @ConfirmedStatus
+                AND p.PaidDate BETWEEN @StartDate AND @EndDate
+                AND p.IsActive = 1
+                ";
 
                 var details = (await connection.QueryAsync<CompanyPaymentRateReportDto>(sql, new
                 {
@@ -66,18 +69,26 @@ namespace ExpenseTracker.Persistence.Services.Report
             using (var connection = new SqlConnection(_configuration.GetConnectionString("MSSQLServer")))
             {
                 var sql = @"
-                    SELECT 
-                        e.Id AS ExpenseId,
-                        e.Amount,
-                        e.Currency,
-                        e.ExpenseStatus,
-                        c.Name AS ExpenseCategoryName,
-                        e.CreatedDate,
-                        e.RejectionReason
-                    FROM Expenses e
-                    INNER JOIN ExpenseCategories c ON e.ExpenseCategoryId = c.Id
-                    WHERE e.UserId = @UserId AND e.IsActive = 1
-                    ORDER BY e.CreatedDate DESC;
+                SELECT 
+                e.Id AS ExpenseId,
+                e.Amount,
+                CASE 
+                WHEN e.Currency = 1 THEN 'TRY'
+                ELSE 'Unknown'
+                END AS Currency,
+                CASE 
+                WHEN e.ExpenseStatus = 0 THEN 'Pending'
+                WHEN e.ExpenseStatus = 1 THEN 'Approved'
+                WHEN e.ExpenseStatus = 2 THEN 'Rejected'
+                ELSE 'Unknown'
+                END AS ExpenseStatus,
+                c.Name AS ExpenseCategoryName,
+                e.CreatedDate,
+                e.RejectionReason
+                FROM Expenses e
+                INNER JOIN ExpenseCategories c ON e.ExpenseCategoryId = c.Id
+                WHERE e.UserId = @UserId AND e.IsActive = 1
+                ORDER BY e.CreatedDate DESC;
                 ";
 
                 var result = await connection.QueryAsync<ExpenseReportDto>(sql, new { UserId = userId });
@@ -89,28 +100,28 @@ namespace ExpenseTracker.Persistence.Services.Report
             using (var connection = new SqlConnection(_configuration.GetConnectionString("MSSQLServer")))
             {
                 var sql = @"
-                 SELECT 
+                SELECT 
                 u.Name AS UserName,
                 u.Surname AS UserSurname,
                 p.Amount,
-                p.Currency,
+                CASE 
+                WHEN p.Currency = 1 THEN 'TRY'
+                ELSE 'Unknown'
+                END AS Currency,
                 p.PaidDate
-            FROM Payments p
-            INNER JOIN Users u ON p.CreatedUserId = u.Id
-            WHERE p.PaymentTransactionStatus = 2
-              AND p.IsActive = 1
-        ";
+                FROM Payments p
+                INNER JOIN Expenses e ON p.ExpenseId = e.Id
+                INNER JOIN Users u ON e.CreatedUserId = u.Id
+                WHERE p.PaymentTransactionStatus = 2
+                AND p.IsActive = 1
+                AND e.CreatedUserId = @UserId
+                ";
 
-                // Dinamik filtreler ekleme
                 if (startDate.HasValue && endDate.HasValue)
                 {
                     sql += " AND p.PaidDate BETWEEN @StartDate AND @EndDate";
                 }
-
-
-                sql += " AND e.UserId = @UserId";
-
-
+                sql += " AND u.Id = @UserId";
                 sql += " ORDER BY p.PaidDate DESC;";
 
                 var payments = await connection.QueryAsync<UserPaymentRateReportDto>(sql, new
@@ -138,20 +149,20 @@ namespace ExpenseTracker.Persistence.Services.Report
             using (var connection = new SqlConnection(_configuration.GetConnectionString("MSSQLServer")))
             {
                 var sql = @"
-            SELECT 
+                SELECT 
                 e.Amount,
                 e.Currency,
                 c.Name AS ExpenseCategoryName,
                 e.ExpenseStatus,
                 e.CreatedDate
-            FROM Expenses e
-            INNER JOIN ExpenseCategories c ON e.ExpenseCategoryId = c.Id
-            WHERE e.IsActive = 1
-              AND (@Status IS NULL OR e.ExpenseStatus = @Status)
-              AND (@StartDate IS NULL OR e.CreatedDate >= @StartDate)
-              AND (@EndDate IS NULL OR e.CreatedDate <= @EndDate)
-            ORDER BY e.CreatedDate DESC;
-        ";
+                FROM Expenses e
+                INNER JOIN ExpenseCategories c ON e.ExpenseCategoryId = c.Id
+                WHERE e.IsActive = 1
+                AND (@Status IS NULL OR e.ExpenseStatus = @Status)
+                AND (@StartDate IS NULL OR e.CreatedDate >= @StartDate)
+                AND (@EndDate IS NULL OR e.CreatedDate <= @EndDate)
+                ORDER BY e.CreatedDate DESC;
+                ";
 
                 var expenses = await connection.QueryAsync<ExpenseApprovalStatusReportDto>(sql, new
                 {
@@ -172,7 +183,6 @@ namespace ExpenseTracker.Persistence.Services.Report
                 return response;
             }
         }
-
 
 
     }
