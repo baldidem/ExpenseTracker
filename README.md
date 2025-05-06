@@ -68,7 +68,7 @@ JWT Bearer Token kullanılır.
 
 AuthController üzerinden token alınır.
 
-API uçları Admin ve Personnel rollerine göre yetkilendirilmiştir.
+API uçları Admin ve Staff rollerine göre yetkilendirilmiştir.
 
 ⚙️ Kullanılan Teknolojiler
 
@@ -108,7 +108,7 @@ Masraf onay/red işlemleri
 
 Rapor görüntüleme
 
-Personnel:
+Staff:
 
 Masraf oluşturma & listeleme
 
@@ -147,7 +147,7 @@ Request Body Örneği:
 {
   "name": "Didem Updated",
   "surname": "Didem Updated",
-  "email": "john.updated@example.com",
+  "email": "didem.updated@example.com",
   "roleId": 2,
   "iban": "TR000000000000000000000001"
 }
@@ -174,7 +174,7 @@ Request Body Örneği:
 
 💸 ExpensesController
 
-POST /api/Expenses: Yeni masraf ekleme (Personnel)
+POST /api/Expenses: Yeni masraf ekleme (Staff)
 
 Request Body Örneği:
 
@@ -183,6 +183,12 @@ Request Body Örneği:
   "currency": 1,
   "expenseCategoryId": 3,
   "description": "Flight ticket to conference"
+}
+
+PUT /api/Expenses/ExpenseStatus: Masraf onaylama veya reddetme. Onaylanan masraflar icin Payments tablosuna kayıt eklenir. (Admin)
+{
+  "newStatus": 2,
+  "rejectionReason": "Missing document"
 }
 
 📈 ReportsController
