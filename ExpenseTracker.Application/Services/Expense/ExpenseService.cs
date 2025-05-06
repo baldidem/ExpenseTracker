@@ -261,9 +261,5 @@ namespace ExpenseTracker.Application.Services.Expense
             return true;
         }
 
-        //public Task<List<ExpenseResponseDto>> GetByParametersForCurrentUser(ExpenseFilterDto filter)
-        //{
-        //    throw new NotImplementedException();
-        //}
     }
 }

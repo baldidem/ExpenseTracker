@@ -173,8 +173,6 @@ namespace ExpenseTracker.Application.Services.User
             {
                 throw new InvalidOperationException("User is already deleted.");
             }
-
-            // 🔥 Eğer kullanıcının aktif expenses'leri varsa silinemez kuralı koymak istersen:
             if (user.Expenses != null && user.Expenses.Any(e => e.IsActive))
             {
                 throw new InvalidOperationException("User has active expenses and cannot be deleted.");

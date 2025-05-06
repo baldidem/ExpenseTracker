@@ -14,7 +14,6 @@ namespace ExpenseTracker.Application.Mapper
         public ExpenseCategoryMapper()
         {
             CreateMap<ExpenseCategoryCreateDto, ExpenseCategory>();
-            //CreateMap<ExpenseCategoryUpdateDto, ExpenseCategory>();
             CreateMap<ExpenseCategory, ExpenseCategoryResponseDto>();
         }
     }

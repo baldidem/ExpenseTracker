@@ -27,7 +27,7 @@ namespace ExpenseTracker.API.Controllers
             return Ok(new ApiResponse<List<ExpenseResponseDto>>(result));
         }
 
-        [HttpGet]
+        [HttpGet("Staff")]
         [Authorize(Roles = "Staff")]
         public async Task<IActionResult> GetAllForCurrentUser()
         {

@@ -17,12 +17,10 @@ namespace ExpenseTracker.Infrastructure.Auth
             _jwtSettings = jwtSettings;
         }
 
-        public string GenerateToken(User user) // jwtSettings'e gore token uretecek method.
+        public string GenerateToken(User user)
         {
-            //Kullanici bilgileriyle claimleri olusturuyoruz.
             var claims = new List<Claim>
             {
-                //new Claim("UserId", user.Id.ToString()),
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new Claim("FistName" , user.Name),
                 new Claim("Surname", user.Surname),

@@ -25,7 +25,6 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-//////// JWT
 
 var jwtSettings = builder.Configuration.GetSection("JwtSettings").Get<JwtSettings>();
 builder.Services.AddSingleton(jwtSettings);
@@ -46,7 +45,7 @@ builder.Services.AddAuthentication(options =>
         ValidIssuer = jwtSettings.Issuer,
         ValidAudience = jwtSettings.Audience,
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Key)),
-        ClockSkew = TimeSpan.Zero // Expiration süresinde çok küçük sapmalara izin vermez
+        ClockSkew = TimeSpan.Zero
     };
 });
 #region Services
@@ -59,8 +58,6 @@ builder.Services.AddScoped<IReportService, ReportService>();
 #endregion
 
 builder.Services.AddHttpContextAccessor();
-//builder.Services.AddScoped<AppSaveChangesInterceptor>();
-
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "Expense Tracker", Version = "v1.0" });
@@ -87,8 +84,6 @@ builder.Services.AddSwaggerGen(c =>
 
 
 builder.Services.AddAuthorization();
-//////// JWT
-//builder.Services.AddControllers();
 builder.Services.AddScoped<IBcryptPasswordHasher, BcryptPasswordHasher>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 
@@ -97,16 +92,6 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<ExpenseTrackerDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("MSSQLServer")));
-
-//builder.Services.AddDbContext<ExpenseTrackerDbContext>((serviceProvider, options) =>
-//{
-//    var interceptor = serviceProvider.GetRequiredService<AppSaveChangesInterceptor>();
-//    options
-//        .UseSqlServer(builder.Configuration.GetConnectionString("MSSQLServer"))
-//        .AddInterceptors(interceptor);
-//});
-
-//builder.Services.AddSingleton(new MapperConfiguration(x => x.AddProfile(new MapperConfig())).CreateMapper());
 builder.Services.AddAutoMapper(typeof(ExpenseCategoryMapper).Assembly);
 
 

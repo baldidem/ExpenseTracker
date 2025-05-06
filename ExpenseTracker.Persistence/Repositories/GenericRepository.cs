@@ -23,9 +23,6 @@ namespace ExpenseTracker.Persistence.Repositories
         }
         public async Task<TEntity> GetByIdAsync(int id, params string[] includes)
         {
-            //var query = _dbSet.AsQueryable();
-            //query = includes.Aggregate(query, (current, inc) => EntityFrameworkQueryableExtensions.Include(current, inc));
-            //return await EntityFrameworkQueryableExtensions.FirstOrDefaultAsync(query, x => x.Id == id);
             IQueryable<TEntity> query = _context.Set<TEntity>();
 
             if (includes != null && includes.Any())

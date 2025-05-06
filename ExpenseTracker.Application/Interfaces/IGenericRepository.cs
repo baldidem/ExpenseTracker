@@ -5,7 +5,7 @@ namespace ExpenseTracker.Application.Interfaces
 {
     public interface IGenericRepository<TEntity> where TEntity : BaseEntity
     {
-        Task<TEntity?> GetByIdAsync(int id, params string[] includes); //Find null donebilir. Bu nedenle nullable yaptim.
+        Task<TEntity?> GetByIdAsync(int id, params string[] includes);
         Task<List<TEntity>> GetAllAsync(); 
         Task<List<TEntity>> GetAllByParametersAsync(params Expression<Func<TEntity, bool>>[] predicates);
         Task<TEntity> GetByParametersAsync(params Expression<Func<TEntity, bool>>[] predicates);

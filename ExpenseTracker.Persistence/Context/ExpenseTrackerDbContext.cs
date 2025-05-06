@@ -1,5 +1,4 @@
 ﻿using ExpenseTracker.Domain.Entities;
-using ExpenseTracker.Persistence.Interceptors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
@@ -13,11 +12,6 @@ namespace ExpenseTracker.Persistence.Context
         {
             _httpContextAccessor = httpContextAccessor;
         }
-
-        //public ExpenseTrackerDbContext(DbContextOptions<ExpenseTrackerDbContext> options) : base(options)
-        //{
-
-        //}
         public DbSet<User> Users { get; set; }
         public DbSet<Role> Roles { get; set; }
         public DbSet<Expense> Expenses { get; set; }
@@ -53,7 +47,7 @@ namespace ExpenseTracker.Persistence.Context
                         break;
 
                     case EntityState.Deleted:
-                        entry.State = EntityState.Modified; // Soft-delete
+                        entry.State = EntityState.Modified;
                         entry.Entity.DeletedDate = DateTime.UtcNow;
                         entry.Entity.DeletedUserId = userId;
                         entry.Entity.IsActive = false;
@@ -63,7 +57,5 @@ namespace ExpenseTracker.Persistence.Context
 
             return await base.SaveChangesAsync(cancellationToken);
         }
-        //TO DO:INTERCEPTOR EKLE. // BURDA DIREKT HTTPCONTEXTACCESSORA TIGHTLY COUPLED VAR. O YUZDEN KALDIRDIM
-        //EXPENSE CATEGORY REDIS.
     }
 }

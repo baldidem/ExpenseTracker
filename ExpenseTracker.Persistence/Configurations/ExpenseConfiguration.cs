@@ -16,12 +16,6 @@ namespace ExpenseTracker.Persistence.Configurations
                 .IsRequired();
             builder.Property(x => x.ExpenseStatus)
                 .IsRequired();
-
-            //builder.Property(x=>x.ExpenseStatus)
-            //    .HasConversion<string>() // int tutmak istedigim icin sunu kullanmayacagim.
-            //    .IsRequired();
-
-
         }
     }
 }

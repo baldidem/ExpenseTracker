@@ -6,13 +6,10 @@ namespace ExpenseTracker.Application.DTOs.Report
     {
         public int ExpenseId { get; set; }
         public decimal Amount { get; set; }
-        //public Currency Currency { get; set; } 
-        //public ExpenseStatus ExpenseStatus { get; set; }
         public string Currency { get; set; }
         public string ExpenseStatus { get; set; }
         public string ExpenseCategoryName { get; set; }
         public DateTime CreatedDate { get; set; }
         public string? RejectionReason { get; set; }
-        //public int UserId { get; set; }
     }
 }
